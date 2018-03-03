@@ -10,14 +10,32 @@ class Location():
         if isinstance(self.data,list):
             return False
         else:
-            pass
+            if self.data[3].isalpha() and not ("," in self.data):
+                return True
 
     def is_latlon(self):
         """
         @brief checks if location data is Lat,Lon
         @params None
         """
-        pass
+        if isinstance(self.data,list):
+            if isinstance(self.data[0],int):
+                x = str(self.data[0])
+            else:
+                x = self.data[0]
+
+            if "." in x:
+                return True
+        else:
+            if "," in self.data:
+                y = self.data.split(",")
+                if "." in y[0]:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+                
 
     def is_utm(self):
         """
@@ -27,17 +45,8 @@ class Location():
         if isinstance(self.data,list):
             return False
         else:
-            pass
-
-    def is_ne(self):
-        """
-        @brief checks if location data is Northing,Easting
-        @params None
-        """
-        pass
-
-
-
+            if self.data[3].isalpha() and ("," in self.data):
+                return True
     def as_mgrs(self):
         """
         @brief converts location data to MGRS
@@ -46,7 +55,11 @@ class Location():
         if self.is_mgrs():
             return self.data
         else:
-            pass
+            if self.is_utm():
+                return self.data.replace(","," ")
+            elif self.is_latlon():
+                #convert latlon to MGRS
+                pass
 
     def as_latlon(self):
         """
@@ -56,7 +69,12 @@ class Location():
         if self.is_latlon():
             return self.data
         else:
-            pass
+            if self.is_utm():
+                #convert utm to latlon
+                pass
+            elif self.is_mgrs():
+                #convert mgrs to latlon
+                pass
 
     def as_utm(self):
         """
@@ -66,16 +84,8 @@ class Location():
         if self.is_utm():
             return self.data
         else:
-            pass
-    def as_ne(self):
-        """
-        @brief converts location data to Northing,Easting
-        @params None
-        """
-        if self.is_ne():
-            return self.data
-        else:
-            pass
+            if self.is_mgrs():
+                return self.data.replace("")
 
     def as_address(self):
         """
@@ -90,3 +100,7 @@ class Location():
 
         # geocode d
         print(d)
+
+
+if __name__ == "__main__":
+    pass
