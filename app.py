@@ -1,4 +1,6 @@
 import sqlite3
+from hashlib import sha1
+
 
 conn = sqlite3.connect('sources.db')
 
@@ -25,5 +27,6 @@ def sh_generator(tag):
     return lines
 
 def add_sh_to_cron(sh):
-    out = "\n".join(sh)
+    out = "\n\n".join(sh)
+    f = open("")
     
