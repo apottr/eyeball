@@ -1,8 +1,11 @@
-import sqlite3
+import sqlite3,os
 from hashlib import sha1
 from pathlib import Path
 
+from crontab import CronTab
+
 conn = sqlite3.connect('sources.db')
+cron = CronTab(user=True)
 directory = Path(__file__).parent
 
 def add_source(src):
@@ -27,10 +30,17 @@ def sh_generator(tag):
             lines.append("{} #{}".format(entry[1],entry[0]))
     return lines
 
-def add_sh_to_cron(sh,schedule):
+def add_sh_to_cron(name,sh,schedule):
     out = "\n\n".join(sh)
     d = directory / "shell_files"
-    f = open(d / sha1(out).hexdigest())
+    fname = (d / name).with_suffix(".sh")
+    f = open(fname)
     f.write(out)
-
-    
+    j = cron.new(command="sh {}".format(fname),comment=name)
+    j.setall(schedule)
+    v = j.is_valid()
+    if v:
+        return True
+    else:
+        os.remove(fname)
+        return False
