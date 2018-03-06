@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/css">
+    </head>
+    <body>
+        <nav id="nav">
+            <a href="#jobs">Jobs</a>
+            <a href="#sources">Sources</a>
+        </nav>
+        <h1 id="jobs">Jobs</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Tags</th>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>{{job.name}}</td>
+                    <td>{{job.tags}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location='/add_job';">Add New Job</button>
+        <h1 id="sources">Sources</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Snippet</th>
+                <th>Tags</th>
+            </thead>
+            <tbody>
+                {% for source in sources %}
+                <tr>
+                    <td>{{source.name}}</td>
+                    <td class="snippet">{{source.snippet}}</td>
+                    <td>{{source.tags}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location='/add_source';">Add New Source</button>
+        <a href="#nav">Back to Top</a>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/css"
+    </head>
+    <body>
+        <form method="POST" action="/add_source">
+            <div>
+            <label>Name</label>
+            <input type="text" name="name">
+            </div>
+            <div>
+            <label>Command</label>
+            <input type="text" name="command" style="font-family: monospace">
+            </div>
+            <div>
+            <label>Tags</label>
+            <input type="text" name="tag">
+            </div>
+            Existing tags are:
+            <ul>
+                {% for item in tags %}
+                <li><a onclick='document.querySelector("input[name=tag]").value = "{{item}}"'>{{ item }}</a></li>
+                {% endfor %}
+            </ul>
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

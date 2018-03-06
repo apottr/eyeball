@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/css"
+    </head>
+    <body>
+        <form method="POST" action="/add_job">
+            <div>
+            <label>Name</label>
+            <input type="text" name="name">
+            </div>
+            <div>
+            <label>Tags to Use</label>
+            <input type="text" id="autocomplete" name="tags">
+            </div>
+            <label>List of sources to be added</label>
+            <ul id="sourcelist">
+                <li></li>
+            </ul>
+        </form>
+    </body>
+    <script>
+        let ac = document.getElementById("autocomplete")
+        //implement autocompletion??
+    </script>
+</html>
