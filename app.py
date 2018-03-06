@@ -1,8 +1,9 @@
 import sqlite3
 from hashlib import sha1
-
+from pathlib import Path
 
 conn = sqlite3.connect('sources.db')
+directory = Path(__file__).parent
 
 def add_source(src):
     c = conn.cursor()
@@ -26,7 +27,10 @@ def sh_generator(tag):
             lines.append("{} #{}".format(entry[1],entry[0]))
     return lines
 
-def add_sh_to_cron(sh):
+def add_sh_to_cron(sh,schedule):
     out = "\n\n".join(sh)
-    f = open("")
+    d = directory / "shell_files"
+    f = open(d / sha1(out).hexdigest())
+    f.write(out)
+
     
