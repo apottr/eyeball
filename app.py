@@ -35,10 +35,20 @@ def add_source(src):
         print(e)
         return False
 
+def add_job(src):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    sh = sh_generator(src["tags"])
+    try:
+        c.execute('insert into jobs values (?,?)',(src["name",src["tags"]]))
+    except Exception as e:
+        print(e)
+    add_sh_to_cron(src["name"],sh,"")
+
 def lookup_by_tag(tag):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    c.execute('select * from sources where loctag like "%?,%"',(tag,))
+    c.execute('select * from sources where loctag like ?',("%{}%".format(tag),))
     return c.fetchall()
 
 def get_tags():
@@ -87,7 +97,7 @@ def get_jobs():
     return out
 
 def sh_generator(tag):
-    lines = ["#!/bin/sh"]
+    lines = []
     f = lookup_by_tag(tag)
     if len(f) != 0:
         for entry in f:
@@ -95,14 +105,15 @@ def sh_generator(tag):
     return lines
 
 def add_sh_to_cron(name,sh,schedule):
-    out = "\n\n".join(sh)
+    out = "\n\n".join(["#!/bin/sh",*sh])
     d = directory / "shell_files"
     fname = (d / name).with_suffix(".sh")
-    f = open(fname)
+    f = open(fname,"w+")
     f.write(out)
-    j = cron.new(command="sh {}".format(fname),comment=name)
+    """j = cron.new(command="sh {}".format(fname),comment=name)
     j.setall(schedule)
-    v = j.is_valid()
+    v = j.is_valid()"""
+    v = True
     if v:
         return True
     else:
@@ -137,7 +148,12 @@ def add_source_route():
 @app.route("/add_job", methods=["GET","POST"])
 def add_job_route():
     if request.method == "GET":
-        return render_template("add_job.html")
+        return render_template("add_job.html",tags=get_tags())
+    else:
+        f = request.form
+        print(f)
+        add_job(f)
+        return redirect("/")
 
 if __name__ == "__main__":
     init_db()

@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" href="/css"
+        <link rel="stylesheet" href="/css">
     </head>
     <body>
         <form method="POST" action="/add_job">
@@ -12,10 +12,13 @@
             <label>Tags to Use</label>
             <input type="text" id="autocomplete" name="tags">
             </div>
-            <label>List of sources to be added</label>
-            <ul id="sourcelist">
-                <li></li>
+            Existing tags are:
+            <ul>
+                {% for item in tags %}
+                <li><a onclick='document.querySelector("input[name=tags]").value = "{{item}}"'>{{ item }}</a></li>
+                {% endfor %}
             </ul>
+            <button type="submit">Submit</button>
         </form>
     </body>
     <script>
