@@ -40,7 +40,9 @@ def add_job(src):
     c = conn.cursor()
     sh = sh_generator(src["tags"])
     try:
-        c.execute('insert into jobs values (?,?)',(src["name",src["tags"]]))
+        c.execute('insert into jobs values (?,?)',(src["name"],src["tags"]))
+        conn.commit()
+        conn.close()
     except Exception as e:
         print(e)
     add_sh_to_cron(src["name"],sh,"")
