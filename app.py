@@ -105,7 +105,8 @@ def sh_generator(tag,name):
     f = lookup_by_tag(tag)
     if len(f) != 0:
         for entry in f:
-            d = (directory / "data" / name / entry[0]).mkdir(parents=True,exist_ok=True)
+            d = (directory / "data" / name / entry[0])
+            d.mkdir(parents=True,exist_ok=True)
             lines.append("{0} > {2}/$(date +%s) #{1}".format(entry[1],entry[0],d))
     return lines
 
