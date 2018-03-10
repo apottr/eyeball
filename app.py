@@ -6,7 +6,7 @@ from flask import Flask,request,render_template,redirect
 
 dbname = 'sources.db'
 cron = CronTab(user=True)
-directory = Path(__file__).parent
+directory = Path(__file__).parent.resolve()
 app = Flask(__name__)
 
 def init_db():
@@ -46,6 +46,8 @@ def add_job(src):
     except Exception as e:
         print(e)
     add_sh_to_cron(src["name"],sh,"")
+    #cron.write()
+    print(cron)
 
 def lookup_by_tag(tag):
     conn = sqlite3.connect(dbname)
@@ -112,15 +114,24 @@ def add_sh_to_cron(name,sh,schedule):
     fname = (d / name).with_suffix(".sh")
     f = open(fname,"w+")
     f.write(out)
-    """j = cron.new(command="sh {}".format(fname),comment=name)
+    j = cron.new(command="sh {}".format(fname),comment=name)
     j.setall(schedule)
-    v = j.is_valid()"""
-    v = True
+    v = j.is_valid()
+    #v = True
     if v:
         return True
     else:
         os.remove(fname)
         return False
+
+def delete_job(name):
+        os.remove("shell_files/{}.sh".format(name))
+        cron.remove_all(comment=name)
+        conn = sqlite3.connect(dbname)
+        c = conn.cursor()
+        c.execute('delete from jobs where name=?',(name,))
+        conn.commit()
+        conn.close()
 
 @app.route("/")
 def index_route():
@@ -134,6 +145,9 @@ def css_route():
         }
         ul {
             list-style-type: none;
+        }
+        a[href^="/del_job/"] {
+            color: #f00;
         }
     """
 
@@ -155,6 +169,14 @@ def add_job_route():
         f = request.form
         print(f)
         add_job(f)
+        return redirect("/")
+
+@app.route("/del_job/<name>", methods=["GET"])
+def del_job_method(name):
+    if name:
+        delete_job(name)
+        return redirect("/")
+    else:
         return redirect("/")
 
 if __name__ == "__main__":
