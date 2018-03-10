@@ -38,14 +38,14 @@ def add_source(src):
 def add_job(src):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    sh = sh_generator(src["tags"])
+    sh = sh_generator(src["tags"],src["name"])
     try:
         c.execute('insert into jobs values (?,?)',(src["name"],src["tags"]))
         conn.commit()
         conn.close()
     except Exception as e:
         print(e)
-    add_sh_to_cron(src["name"],sh,"")
+    add_sh_to_cron(src["name"],sh,src["schedule"])
     #cron.write()
     print(cron)
 
@@ -100,12 +100,13 @@ def get_jobs():
             })
     return out
 
-def sh_generator(tag):
+def sh_generator(tag,name):
     lines = []
     f = lookup_by_tag(tag)
     if len(f) != 0:
         for entry in f:
-            lines.append("{} #{}".format(entry[1],entry[0]))
+            d = (directory / "data" / name / entry[0]).mkdir(parents=True,exist_ok=True)
+            lines.append("{0} > {2}/$(date +%s) #{1}".format(entry[1],entry[0],d))
     return lines
 
 def add_sh_to_cron(name,sh,schedule):
@@ -125,8 +126,20 @@ def add_sh_to_cron(name,sh,schedule):
         return False
 
 def delete_job(name):
-        os.remove("shell_files/{}.sh".format(name))
+        try:
+            os.remove("shell_files/{}.sh".format(name))
+        except Exception as e:
+            print(e)
         cron.remove_all(comment=name)
+        d = (directory / "data" / name)
+        for f in d.iterdir():
+            if f.is_dir():
+                for x in f.iterdir():
+                    os.remove(x)
+                f.rmdir()
+            else:
+                os.remove(f)
+        d.rmdir()
         conn = sqlite3.connect(dbname)
         c = conn.cursor()
         c.execute('delete from jobs where name=?',(name,))
