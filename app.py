@@ -110,6 +110,18 @@ def get_jobs():
             })
     return out
 
+def check_cron():
+    jobs = get_jobs()
+    d = directory / "shell_files"
+    for job in jobs:
+        if len(list(cron.find_comment(job["name"]))) != 0:
+            pass
+        else:
+            fname = (d / job["name"].replace(" ","_")).with_suffix(".sh")
+            j = cron.new(command="sh {}".format(fname),comment=job["name"])
+            j.setall(job["schedule"])
+    print(cron)
+
 def sh_generator(tag,name):
     lines = []
     f = lookup_by_tag(tag)
@@ -219,4 +231,5 @@ def del_source_route(name):
 
 if __name__ == "__main__":
     init_db()
+    check_cron()
     app.run(debug=True)
