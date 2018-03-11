@@ -5,3 +5,4 @@ lib
 lib64
 pip-selfcheck.json
 sources.db
+sources.db.bak

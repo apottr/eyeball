@@ -12,18 +12,21 @@
             <thead>
                 <th>Name</th>
                 <th>Tags</th>
+                <th>Schedule</th>
             </thead>
             <tbody>
                 {% for job in jobs %}
                 <tr>
                     <td>{{job.name}}</td>
                     <td>{{job.tags}}</td>
+                    <td>{{job.schedule}}</td>
                     <td><a href="/del_job/{{job.name}}">Delete</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <button onclick="window.location='/add_job';">Add New Job</button>
+        <button onclick="window.location='/add_job';">Add New Job</button><br />
+        <a href="#nav">Back to Top</a>
         <h1 id="sources">Sources</h1>
         <table>
             <thead>
@@ -37,11 +40,12 @@
                     <td>{{source.name}}</td>
                     <td class="snippet">{{source.snippet}}</td>
                     <td>{{source.tags}}</td>
+                    <td><a href="/del_source/{{source.name}}">Delete</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <button onclick="window.location='/add_source';">Add New Source</button>
+        <button onclick="window.location='/add_source';">Add New Source</button><br />
         <a href="#nav">Back to Top</a>
     </body>
 </html>

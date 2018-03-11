@@ -19,7 +19,7 @@ def init_db():
     try:
         c.execute('select * from jobs')
     except sqlite3.OperationalError:
-        c.execute('create table jobs (name text, tags text)')
+        c.execute('create table jobs (name text, tags text, schedule text)')
 
     c.close()
 
@@ -40,7 +40,7 @@ def add_job(src):
     c = conn.cursor()
     sh = sh_generator(src["tags"],src["name"])
     try:
-        c.execute('insert into jobs values (?,?)',(src["name"],src["tags"]))
+        c.execute('insert into jobs values (?,?,?)',(src["name"],src["tags"],src["schedule"]))
         conn.commit()
         conn.close()
     except Exception as e:
@@ -94,9 +94,19 @@ def get_jobs():
     r = c.fetchall()
     if len(r) != 0:
         for item in r:
+            m = {
+                "@hourly": "Once an hour",
+                "@daily": "Once a day",
+                "@weekly": "Once a week",
+                "* * * * *": "Once a minute",
+                "0 * * * *": "Once an hour",
+                "0 0 * * *": "Once a day",
+                "0 0 * * 0": "Once a week"
+            }
             out.append({
                 "name": item[0],
-                "tags": item[1]
+                "tags": item[1],
+                "schedule": m[item[2]]
             })
     return out
 
@@ -113,7 +123,7 @@ def sh_generator(tag,name):
 def add_sh_to_cron(name,sh,schedule):
     out = "\n\n".join(["#!/bin/sh",*sh])
     d = directory / "shell_files"
-    fname = (d / name).with_suffix(".sh")
+    fname = (d / name.replace(" ","_")).with_suffix(".sh")
     f = open(fname,"w+")
     f.write(out)
     j = cron.new(command="sh {}".format(fname),comment=name)
@@ -147,6 +157,13 @@ def delete_job(name):
         conn.commit()
         conn.close()
 
+def delete_source(name):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.execute('delete from sources where name=?',(name,))
+    conn.commit()
+    conn.close()
+
 @app.route("/")
 def index_route():
     return render_template("index.html",sources=get_sources(),jobs=get_jobs())
@@ -160,7 +177,7 @@ def css_route():
         ul {
             list-style-type: none;
         }
-        a[href^="/del_job/"] {
+        a[href^="/del_"] {
             color: #f00;
         }
     """
@@ -186,9 +203,16 @@ def add_job_route():
         return redirect("/")
 
 @app.route("/del_job/<name>", methods=["GET"])
-def del_job_method(name):
+def del_job_route(name):
     if name:
         delete_job(name)
+        return redirect("/")
+    else:
+        return redirect("/")
+@app.route("/del_source/<name>", methods=["GET"])
+def del_source_route(name):
+    if name:
+        delete_source(name)
         return redirect("/")
     else:
         return redirect("/")
