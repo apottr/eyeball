@@ -28,6 +28,12 @@
         <button onclick="window.location='/add_job';">Add New Job</button><br />
         <a href="#nav">Back to Top</a>
         <h1 id="sources">Sources</h1>
+        <form method='POST' action='/load_sources' enctype="multipart/form-data">
+            <label>Upload Sources</label>
+            <input type="file" name="file">
+            <button type="submit">Upload</button>
+        </form>
+        <button onclick="window.location='/export_sources';">Export Sources</button>
         <table>
             <thead>
                 <th>Name</th>

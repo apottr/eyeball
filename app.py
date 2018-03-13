@@ -1,12 +1,12 @@
-import sqlite3,os
+import sqlite3,os,csv,io
 from hashlib import sha1
 from pathlib import Path
 from crontab import CronTab
-from flask import Flask,request,render_template,redirect
+from flask import Flask,request,render_template,redirect,Response
 
 dbname = 'sources.db'
 cron = CronTab(user=True)
-directory = Path(__file__).parent.resolve()
+directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 app = Flask(__name__)
 
 def init_db():
@@ -176,6 +176,13 @@ def delete_source(name):
     conn.commit()
     conn.close()
 
+def sources_from_csv(lst):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.executemany("insert into sources values (?,?,?)",[i for i in lst][1:])
+    conn.commit()
+    conn.close()
+
 @app.route("/")
 def index_route():
     return render_template("index.html",sources=get_sources(),jobs=get_jobs())
@@ -228,6 +235,28 @@ def del_source_route(name):
         return redirect("/")
     else:
         return redirect("/")
+
+@app.route("/export_sources")
+def export_sources_route():
+    s = get_sources()
+    h = list(s[0].keys())
+    l = [";".join([item[h[0]],item[h[1]],item[h[2]]]) for item in s]
+    return Response("\n".join([";".join(h)]+l),mimetype='text/csv')
+
+@app.route("/load_sources", methods=['POST'])
+def load_sources_route():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return redirect("/")
+        f = request.files['file']
+        if f.filename == '':
+            return redirect("/")
+        fl = f.read()
+        print(fl)
+        csvr = csv.reader(str(fl).split("\\n"),delimiter=";")
+        sources_from_csv(csvr)
+        return redirect("/")
+    
 
 if __name__ == "__main__":
     init_db()
