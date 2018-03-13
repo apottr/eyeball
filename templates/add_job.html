@@ -9,12 +9,19 @@
                 <input type="text" name="name">
             </div>
             <div>
-                <label>Schedule</label>
+                <!--<label>Schedule</label>
                 <select name="schedule">
                     <option value="* * * * *">Once a minute</option>
                     <option value="0 * * * *">Once an hour</option>
                     <option value="0 0 * * *">Once a day</option>
                     <option value="0 0 * * 0">Once a week</option>
+                </select>-->
+                <label>Every</label>
+                <input type="number" value="1" name="sch_n">
+                <select name="sch_mhd" value="m">
+                    <option value="m">Minute(s)</option>
+                    <option value="h">Hour(s)</option>
+                    <option value="d">Day(s)</option>
                 </select>
             </div>
             <div>

@@ -39,15 +39,24 @@ def add_job(src):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
     sh = sh_generator(src["tags"],src["name"])
+    sch = ""
+    if src["sch_mhd"] == "m":
+        sch = "*/{} * * * *".format(src["sch_n"])
+    elif src["sch_mhd"] == "h":
+        sch = "0 */{} * * *".format(src["sch_n"])
+    elif src["sch_mhd"] == "d":
+        sch = "0 0 */{} * *".format(src["sch_n"])
     try:
-        c.execute('insert into jobs values (?,?,?)',(src["name"],src["tags"],src["schedule"]))
+        c.execute('insert into jobs values (?,?,?)',(src["name"],src["tags"],sch))
         conn.commit()
         conn.close()
     except Exception as e:
         print(e)
-    add_sh_to_cron(src["name"],sh,src["schedule"])
-    #cron.write()
-    print(cron)
+    v = add_sh_to_cron(src["name"],sh,sch)
+    print("{} is valid: {}".format(src["name"],v))
+    if v:
+        cron.write()
+    return v
 
 def lookup_by_tag(tag):
     conn = sqlite3.connect(dbname)
@@ -94,7 +103,7 @@ def get_jobs():
     r = c.fetchall()
     if len(r) != 0:
         for item in r:
-            m = {
+            """m = {
                 "@hourly": "Once an hour",
                 "@daily": "Once a day",
                 "@weekly": "Once a week",
@@ -102,11 +111,11 @@ def get_jobs():
                 "0 * * * *": "Once an hour",
                 "0 0 * * *": "Once a day",
                 "0 0 * * 0": "Once a week"
-            }
+            }"""
             out.append({
                 "name": item[0],
                 "tags": item[1],
-                "schedule": m[item[2]]
+                "schedule": item[2]
             })
     return out
 
@@ -127,7 +136,7 @@ def sh_generator(tag,name):
     f = lookup_by_tag(tag)
     if len(f) != 0:
         for entry in f:
-            d = (directory / "data" / name / entry[0])
+            d = (directory / "data" / name.replace(" ","_") / entry[0])
             d.mkdir(parents=True,exist_ok=True)
             lines.append("{0} > {2}/$(date +%s) #{1}".format(entry[1],entry[0],d))
     return lines
@@ -150,11 +159,11 @@ def add_sh_to_cron(name,sh,schedule):
 
 def delete_job(name):
         try:
-            os.remove("shell_files/{}.sh".format(name))
+            os.remove("shell_files/{}.sh".format(name.replace(" ","_")))
         except Exception as e:
             print(e)
         cron.remove_all(comment=name)
-        d = (directory / "data" / name)
+        d = (directory / "data" / name.replace(" ","_"))
         for f in d.iterdir():
             if f.is_dir():
                 for x in f.iterdir():
@@ -168,6 +177,7 @@ def delete_job(name):
         c.execute('delete from jobs where name=?',(name,))
         conn.commit()
         conn.close()
+        cron.write()
 
 def delete_source(name):
     conn = sqlite3.connect(dbname)
@@ -201,37 +211,27 @@ def css_route():
         }
     """
 
-@app.route("/add_source", methods=["GET","POST"])
-def add_source_route():
+@app.route("/add_<typ>", methods=["GET","POST"])
+def add_source_route(typ):
     if request.method == "GET":
-        return render_template("add_source.html",tags=get_tags())
+        return render_template("add_{}.html".format(typ),tags=get_tags())
     else:
         f = request.form
         print(f)
-        add_source(f)
+        if typ == "source":
+            add_source(f)
+        elif typ == "job":
+            x = add_job(f)
+            if not x: return redirect("/add_job")
         return redirect("/")
 
-@app.route("/add_job", methods=["GET","POST"])
-def add_job_route():
-    if request.method == "GET":
-        return render_template("add_job.html",tags=get_tags())
-    else:
-        f = request.form
-        print(f)
-        add_job(f)
-        return redirect("/")
-
-@app.route("/del_job/<name>", methods=["GET"])
-def del_job_route(name):
+@app.route("/del_<typ>/<name>", methods=["GET"])
+def del_item_route(typ,name):
     if name:
-        delete_job(name)
-        return redirect("/")
-    else:
-        return redirect("/")
-@app.route("/del_source/<name>", methods=["GET"])
-def del_source_route(name):
-    if name:
-        delete_source(name)
+        if typ == "job":
+            delete_job(name)
+        elif typ == "source":
+            delete_source(name)
         return redirect("/")
     else:
         return redirect("/")
@@ -253,7 +253,7 @@ def load_sources_route():
             return redirect("/")
         fl = f.read()
         print(fl)
-        csvr = csv.reader(str(fl).split("\\n"),delimiter=";")
+        csvr = csv.reader(fl.decode("utf-8").split("\n"),delimiter=";")
         sources_from_csv(csvr)
         return redirect("/")
     
