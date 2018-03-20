@@ -152,7 +152,7 @@ def add_sh_to_cron(name,sh,schedule):
     v = j.is_valid()
     #v = True
     if v:
-        return True
+        return j
     else:
         os.remove(fname)
         return False
@@ -208,7 +208,9 @@ def add_source_route(typ):
             add_source(f)
         elif typ == "job":
             x = add_job(f)
-            if not x: return redirect("/add_job")
+            if isinstance(x,bool) and not x: 
+                return redirect("/add_job")
+            x.run()
         return redirect("/")
 
 @app.route("/del_<typ>/<name>", methods=["GET"])
