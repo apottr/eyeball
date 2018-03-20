@@ -1,9 +1,9 @@
 <html>
     <head>
-        <link rel="stylesheet" href="/css"
+        <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
     </head>
     <body>
-        <form method="POST" action="/add_source">
+        <form method="POST" action="?">
             <div>
             <label>Name</label>
             <input type="text" name="name">

@@ -1,44 +1,58 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="/css">
-    </head>
-    <body>
-        <form method="POST" action="/add_job">
-            <div>
-                <label>Name</label>
-                <input type="text" name="name">
-            </div>
-            <div>
-                <!--<label>Schedule</label>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol-debug.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='job_main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.css">
+</head>
+
+<body>
+    <div class="grid">
+        <div class="left">
+            <form method="POST" action="/add_job">
+                <div>
+                    <label>Name</label>
+                    <input type="text" name="name">
+                </div>
+                <div>
+                    <!--<label>Schedule</label>
                 <select name="schedule">
                     <option value="* * * * *">Once a minute</option>
                     <option value="0 * * * *">Once an hour</option>
                     <option value="0 0 * * *">Once a day</option>
                     <option value="0 0 * * 0">Once a week</option>
                 </select>-->
-                <label>Every</label>
-                <input type="number" value="1" name="sch_n">
-                <select name="sch_mhd" value="m">
-                    <option value="m">Minute(s)</option>
-                    <option value="h">Hour(s)</option>
-                    <option value="d">Day(s)</option>
-                </select>
-            </div>
-            <div>
-                <label>Tags to Use</label>
-                <input type="text" id="autocomplete" name="tags">
-            </div>
-            Existing tags are:
-            <ul>
-                {% for item in tags %}
-                <li><a onclick='document.querySelector("input[name=tags]").value = "{{item}}"'>{{ item }}</a></li>
-                {% endfor %}
-            </ul>
-            <button type="submit">Submit</button>
-        </form>
-    </body>
-    <script>
-        let ac = document.getElementById("autocomplete")
-        //implement autocompletion??
-    </script>
+                    <label>Every</label>
+                    <input type="number" value="1" name="sch_n">
+                    <select name="sch_mhd" value="m">
+                        <option value="m">Minute(s)</option>
+                        <option value="h">Hour(s)</option>
+                        <option value="d">Day(s)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Tags to Use</label>
+                    <input type="text" id="autocomplete" name="tags">
+                </div>
+                Existing tags are:
+                <ul>
+                    {% for item in tags %}
+                    <li>
+                        <a onclick='document.querySelector("input[name=tags]").value = "{{item}}"'>{{ item }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <input type="hidden" name="wkt" value="">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div class="right" id="map">
+        </div>
+    </div>
+</body>
+<script src="{{ url_for('static',filename='main.js') }}"></script>
+<script src="{{ url_for('static',filename='job_main.js') }}"></script>
+
 </html>

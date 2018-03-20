@@ -1,0 +1,8 @@
+.ol-control > button {
+    font-family: FontAwesome;
+}
+
+div.clear {
+    top: 65px;
+    left: .5em;
+}

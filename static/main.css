@@ -1,0 +1,34 @@
+input[name="command"], .snippet{
+    font-family: monospace;
+}
+ul {
+    list-style-type: none;
+}
+a[href^="/del_"] {
+    color: #f00;
+}
+
+html,body{
+    height: 100%;
+    width: 100%;
+}
+body {
+    margin: 0px;
+}
+
+div.grid {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns:
+        [left] 1fr
+        [right] 3fr;
+}
+
+div.grid > div.left {
+    grid-column: left;
+}
+
+div.grid > div.right {
+    grid-column: right;
+}

@@ -19,7 +19,7 @@ def init_db():
     try:
         c.execute('select * from jobs')
     except sqlite3.OperationalError:
-        c.execute('create table jobs (name text, tags text, schedule text)')
+        c.execute('create table jobs (name text, tags text, schedule text, wkt string)')
 
     c.close()
 
@@ -47,7 +47,7 @@ def add_job(src):
     elif src["sch_mhd"] == "d":
         sch = "0 0 */{} * *".format(src["sch_n"])
     try:
-        c.execute('insert into jobs values (?,?,?)',(src["name"],src["tags"],sch))
+        c.execute('insert into jobs values (?,?,?,?)',(src["name"],src["tags"],sch,src["wkt"]))
         conn.commit()
         conn.close()
     except Exception as e:
@@ -196,20 +196,6 @@ def sources_from_csv(lst):
 @app.route("/")
 def index_route():
     return render_template("index.html",sources=get_sources(),jobs=get_jobs())
-
-@app.route("/css")
-def css_route():
-    return """
-        input[name="command"], .snippet{
-            font-family: monospace;
-        }
-        ul {
-            list-style-type: none;
-        }
-        a[href^="/del_"] {
-            color: #f00;
-        }
-    """
 
 @app.route("/add_<typ>", methods=["GET","POST"])
 def add_source_route(typ):
