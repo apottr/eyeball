@@ -224,6 +224,17 @@ def del_item_route(typ,name):
     else:
         return redirect("/")
 
+@app.route("/pause_job/<name>", methods=["GET"])
+def pause_job_route(name):
+    if name:
+        for job in cron.find_comment(name):
+            if job.is_enabled():
+                job.enable(False)
+            else:
+                job.enable()
+        cron.write()
+    return redirect("/")
+
 @app.route("/export_sources")
 def export_sources_route():
     s = get_sources()

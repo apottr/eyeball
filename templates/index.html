@@ -21,6 +21,7 @@
                     <td>{{job.name}}</td>
                     <td>{{job.tags}}</td>
                     <td>{{job.schedule}}</td>
+                    <td><a href="/pause_job/{{ job.name }}">Toggle Paused</a></td>
                     <td><a href="/del_job/{{job.name}}">Delete</a></td>
                 </tr>
                 {% endfor %}
