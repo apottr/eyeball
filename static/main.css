@@ -32,3 +32,7 @@ div.grid > div.left {
 div.grid > div.right {
     grid-column: right;
 }
+
+#by-tag,#manual{
+    display: none
+}

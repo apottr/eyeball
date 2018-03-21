@@ -63,3 +63,25 @@ function addInteractions(){
     map.addInteraction(new ol.interaction.Snap({source: source}))
 }
 addInteractions()
+function add_template(val){
+    let tagged = document.getElementById("by-tag")
+    let manual = document.getElementById("manual")
+    switch(val) {
+        case "tag":
+            tagged.style.display = "block"
+            manual.style.display = "none"
+            break
+        case "man":
+            tagged.style.display = "none"
+            manual.style.display = "block"
+            break
+    }
+}
+
+document.getElementById("job-picker").onchange = function(e){
+    let val = e.target.value
+    console.log(val)
+    add_template(val)
+}
+
+add_template("tag")

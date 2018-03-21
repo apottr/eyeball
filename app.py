@@ -52,7 +52,10 @@ def add_job(src):
         conn.close()
     except Exception as e:
         print(e)
-    v = add_sh_to_cron(src["name"],sh,sch)
+    if src["picker"] == "tag":
+        v = add_sh_to_cron(src["name"],sh,sch)
+    elif src["picker"] == "man":
+        v = add_job_by_hand(src["script"],src["name"],sch)
     print("{} is valid: {}".format(src["name"],v))
     if v:
         cron.write()
@@ -151,6 +154,20 @@ def add_sh_to_cron(name,sh,schedule):
     j.setall(schedule)
     v = j.is_valid()
     #v = True
+    if v:
+        return j
+    else:
+        os.remove(fname)
+        return False
+
+def add_job_by_hand(script,name,sched):
+    d = directory / "shell_files"
+    fname = (d / name.replace(" ","_")).with_suffix(".sh")
+    f = open(fname,"w+")
+    f.write(script)
+    j = cron.new(command="sh {}".format(fname),comment=name)
+    j.setall(sched)
+    v = j.is_valid()
     if v:
         return j
     else:
