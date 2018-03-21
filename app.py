@@ -52,10 +52,11 @@ def add_job(src):
         conn.close()
     except Exception as e:
         print(e)
-    if src["picker"] == "tag":
+    """if src["picker"] == "tag":
         v = add_sh_to_cron(src["name"],sh,sch)
     elif src["picker"] == "man":
-        v = add_job_by_hand(src["script"],src["name"],sch)
+        v = add_job_by_hand(src["script"],src["name"],sch)"""
+    v = add_sh_to_cron(src["name"],sh,sch)
     print("{} is valid: {}".format(src["name"],v))
     if v:
         cron.write()

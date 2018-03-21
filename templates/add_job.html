@@ -32,30 +32,18 @@
                         <option value="d">Day(s)</option>
                     </select>
                 </div>
-                <select id="job-picker" name="picker">
-                    <option value="tag">Add Job By Tag</option>
-                    <option value="man">Add Job By Hand</option>
-                </select>
-                <div id="by-tag">
-                        <div>
-                            <label>Tags to Use</label>
-                            <input type="text" id="autocomplete" name="tags">
-                        </div>
-                        Existing tags are:
-                        <ul>
-                            {% for item in tags %}
-                            <li>
-                                <a onclick='document.querySelector("input[name=tags]").value = "{{item}}"'>{{ item }}</a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <div id="manual">
-                        <div>
-                            <label>Add Script Manually</label><br />
-                            <textarea type="text" name="script" rows=20 cols=20></textarea>
-                        </div>
-                    </div>
+                <div>
+                    <label>Tags to Use</label>
+                    <input type="text" id="autocomplete" name="tags">
+                </div>
+                Existing tags are:
+                <ul>
+                    {% for item in tags %}
+                    <li>
+                        <a onclick='document.querySelector("input[name=tags]").value = "{{item}}"'>{{ item }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
                 <input type="hidden" name="wkt" value=""><br />
                 <button type="submit">Submit</button>
             </form>
