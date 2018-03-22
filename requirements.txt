@@ -11,6 +11,7 @@ pylint==1.8.2
 python-crontab==2.2.8
 python-dateutil==2.6.1
 rope==0.10.7
+Shapely==1.6.4.post1
 six==1.11.0
 Werkzeug==0.14.1
 wrapt==1.10.11

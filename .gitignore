@@ -6,3 +6,4 @@ lib64
 pip-selfcheck.json
 sources.db
 sources.db.bak
+__pycache__/*.cpython-36.pyc
