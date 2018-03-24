@@ -28,16 +28,24 @@ def reassemble(tree):
             out.append(leaf)
         else:
             out.append(leaf[0])
-    print(out)
+    return out
 
 def test(sentence):
     tokens = nltk.sent_tokenize(sentence)
     tokens = [nltk.word_tokenize(sent) for sent in tokens]
     tokens = [nltk.pos_tag(sent) for sent in tokens]
     tree = [nltk.ne_chunk(token,binary=True) for token in tokens]
+    data = None
     for item in tree:
-        reassemble(item)
-
+        data = reassemble(item)
+    items = []
+    for item in data:
+        if hasattr(item,"label"):
+            items.append(item.leaves())
+    print({
+        "filename": "",
+        "entities": items
+    })
 
 if __name__ == "__main__":
     nltk_setup(["punkt","averaged_perceptron_tagger","words","maxent_ne_chunker"])
