@@ -13,7 +13,7 @@ def init_db():
     try:
         c.execute('select * from sources')
     except sqlite3.OperationalError:
-        c.execute('create table sources (name text, command text, loctag text)')
+        c.execute('create table sources (name text, command text, loctag text, selector text)')
     try:
         c.execute('select * from jobs')
     except sqlite3.OperationalError:
@@ -25,7 +25,7 @@ def add_source(src):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
     try:
-        c.execute('insert into sources values (?,?,?)',(src["name"],src["command"],src["tag"]))
+        c.execute('insert into sources values (?,?,?,?)',(src["name"],src["command"],src["tag"],src["selector"]))
         conn.commit()
         conn.close()
         return True
@@ -197,6 +197,6 @@ def delete_source(name):
 def sources_from_csv(lst):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    c.executemany("insert into sources values (?,?,?)",[i for i in lst][1:])
+    c.executemany("insert into sources values (?,?,?,?)",[i for i in lst][1:])
     conn.commit()
     conn.close()

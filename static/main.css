@@ -1,4 +1,4 @@
-input[name="command"], .snippet{
+.mono {
     font-family: monospace;
 }
 ul {
