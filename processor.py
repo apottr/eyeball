@@ -1,6 +1,6 @@
 import nltk,sqlite3
 from pathlib import Path
-from selectors import *
+from sel_module import exec_selector
 
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 dbname= str(directory / "sources.db")
@@ -24,7 +24,7 @@ def get_source_selector(name):
     c.execute("select selector from sources where name=?",(name,))
     r = c.fetchall()
     c.close()
-    return r
+    return r[0][0]
 
 def pruning(string):
     s = string.replace("&lt;","")
@@ -70,7 +70,9 @@ def handle_source(name):
     for folder in folders:
         files = list(folder.glob("*"))
         for f in files:
+            print(f)
             data = exec_selector(sel,f)
+            print(data)
 
 
 def test(a):
@@ -88,5 +90,5 @@ if __name__ == "__main__":
         sample_text = pruning(item)
         test(sample_text)
         print()"""
-    handle_source("navcent")
+    handle_source("afcent_379")
     
