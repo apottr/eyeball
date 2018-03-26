@@ -1,4 +1,5 @@
 astroid==1.6.1
+beautifulsoup4==4.6.0
 click==6.7
 Flask==0.12.2
 isort==4.3.4
