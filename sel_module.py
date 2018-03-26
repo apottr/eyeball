@@ -50,7 +50,7 @@ def parse_image(args,data):
 
 def parse_html(args,data):
     howtoget = lambda x,y: x.select(y)
-    pruner = lambda x: x.contents
+    pruner = lambda x: x.get_text()
     return generic_handler(args,BeautifulSoup(data),howtoget,pruner)
 
 def exec_selector(sel,fname):
