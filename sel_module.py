@@ -14,7 +14,7 @@ def generic_handler(args,data,howtoget,pruner):
             d = []
             for tag in args[key]:
                 d += [pruner(item) for item in howtoget(data,tag)]
-        else if args[key] != "$FILENAME":
+        elif args[key] != "$FILENAME":
             d = [pruner(item) for item in howtoget(data,args[key])]
         else:
             d = "$REPLACE_WITH_FILENAME"
