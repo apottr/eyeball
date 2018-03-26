@@ -14,9 +14,10 @@ def generic_handler(args,data,howtoget,pruner):
             d = []
             for tag in args[key]:
                 d += [pruner(item) for item in howtoget(data,tag)]
-        else:
+        else if args[key] != "$FILENAME":
             d = [pruner(item) for item in howtoget(data,args[key])]
-
+        else:
+            d = "$REPLACE_WITH_FILENAME"
         obj[key] = d
     return obj
 
@@ -68,7 +69,9 @@ def exec_selector(sel,fname):
             d = parse_image(args,data)
         elif s[0] == "html":
             d = parse_html(args,data)
-    
+        for key in d.keys():
+            if d[key] == "$REPLACE_WITH_FILENAME":
+                d[key] = fname
         return d
 
 if __name__ == "__main__":
