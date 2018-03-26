@@ -1,4 +1,4 @@
-import nltk,sqlite3
+import nltk,sqlite3,sys
 from pathlib import Path
 from sel_module import exec_selector
 
@@ -74,11 +74,7 @@ def handle_source(name):
             data = exec_selector(sel,f)
             print(data)
 
-
-def test(a):
-    pass
-
 if __name__ == "__main__":
 
-    handle_source("socsouth")
+    handle_source(sys.argv[1])
     
