@@ -85,6 +85,7 @@ def handle_source(name):
                 continue
             if len(db.search(Query().filename == f.stem)) != 0:
                 continue
+            print("doing {}".format(str(f)))
             fin = {}
             data = exec_selector(sel,f)
             d = []
