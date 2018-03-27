@@ -29,10 +29,11 @@ def get_source_selector(name):
     return r[0][0]
 
 def pruning(string):
-    s = string.replace("&lt;","")
-    s = s.replace("&gt;","")
-    s = s.replace(", "," ")
-    s = s.split("—")[1]
+    remap = {
+        "&lt;": "",
+        "&gt;": ""
+    }
+    s = string.translate(remap)
     return s
 
 def reassemble(tree):
@@ -51,7 +52,7 @@ def recurse_reassemble(tree):
             out += recurse_reassemble(leaf)
 
 def pull_ner(sentence):
-    sente = sentence
+    sente = pruning(sentence)
     tokens = nltk.sent_tokenize(sente)
     tokens = [nltk.word_tokenize(sent) for sent in tokens]
     tokens = [nltk.pos_tag(sent) for sent in tokens]
