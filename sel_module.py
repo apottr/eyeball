@@ -69,6 +69,8 @@ def exec_selector(sel,fname):
             data = "\n".join(f.readlines())
         else:
             data = f
+        if len(data) == 0:
+            return {"error": "empty file", "time": fname.stem}
         args = json.loads(s[1]) if s[1] != "" else {}
         if s[0] == "xml":
             d = parse_xml(args,data)
