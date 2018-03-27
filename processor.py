@@ -95,7 +95,7 @@ def handle_source(name):
             fin["entites"] = d
             fin["filename"] = f.stem
             db.insert(fin)
-            print("finished {}".format(f.stem))
+            print("finished {}".format(str(f))
             time.sleep(1)
     
 
