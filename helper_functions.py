@@ -67,9 +67,15 @@ def check_if_source_is_used(name):
     r = c.fetchall()
     tag = r[0][0]
     if "," in tag:
-        tag = tag.split(",")[0]
-    d = c.execute('select * from jobs where tags like ?',("%{}%".format(tag),))
-    return len(d.fetchall()) > 0
+        tag = tag.split(",")
+    o = []
+    if isinstance(tag,list):
+        for t in tag:
+            d = c.execute('select * from jobs where tags like ?',("%{}%".format(t),))
+            o.append(0 if len(d.fetchall()) > 0 else 1)
+    else:
+        d = c.execute('select * from jobs where tags like ?',("%{}%".format(tag),))
+    return 1 in o
 
 def lookup_by_tag(tag):
     conn = sqlite3.connect(dbname)
