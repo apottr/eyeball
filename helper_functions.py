@@ -60,6 +60,14 @@ def add_job(src):
         cron.write()
     return v
 
+def check_if_source_is_used(name):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.execute('select loctag from sources where name=?',(name,))
+    r = c.fetchall()
+    d = c.execute('select * from jobs where tags like ?',("%{}%".format(r[0][0]),))
+    return len(d.fetchall()) > 0
+
 def lookup_by_tag(tag):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
@@ -93,7 +101,8 @@ def get_sources():
             out.append({
                 "name": item[0],
                 "snippet": item[1],
-                "tags": item[2]
+                "tags": item[2],
+                "selector": item[3]
             })
     return out
 
@@ -124,6 +133,7 @@ def check_cron():
         x = cron.new(command=("{} {}".format(pybin,(directory / "processor").with_suffix(".py"))))
         x.setall("0 * * * *")
     print(cron)
+    cron.write()
 
 def sh_generator(tag,name):
     lines = []

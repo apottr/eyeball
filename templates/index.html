@@ -42,6 +42,7 @@
                 <th>Name</th>
                 <th>Snippet</th>
                 <th>Tags</th>
+                <th>Selector</th>
             </thead>
             <tbody>
                 {% for source in sources %}
@@ -49,6 +50,7 @@
                     <td>{{source.name}}</td>
                     <td class="mono">{{source.snippet}}</td>
                     <td>{{source.tags}}</td>
+                    <td class="mono">{{source.selector}}</td>
                     <td><a href="/del_source/{{source.name}}">Delete</a></td>
                 </tr>
                 {% endfor %}

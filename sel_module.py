@@ -47,20 +47,29 @@ def parse_json(args,data):
     return generic_handler(args,json.loads(data),howtoget,pruner)
 
 def parse_image(args,data):
-    return ""
+    out = {}
+    for key in args.keys():
+        if args[key] == "$FILENAME":
+            out[key] = "$REPLACE_WITH_FILENAME"
+    return out
 
 def parse_html(args,data):
     howtoget = lambda x,y: x.select(y)
     pruner = lambda x: x.get_text()
-    return generic_handler(args,BeautifulSoup(data),howtoget,pruner)
+    return generic_handler(args,BeautifulSoup(data,"html.parser"),howtoget,pruner)
+
+def parse_csv(args,data):
+    return {}
 
 def exec_selector(sel,fname):
-    print(sel,fname)
     with open(fname) as f:
         s = parse_selector(sel)
         d = None
-        data = "\n".join(f.readlines())
-        args = json.loads(s[1])
+        if s[0] != "image":
+            data = "\n".join(f.readlines())
+        else:
+            data = f
+        args = json.loads(s[1]) if s[1] != "" else {}
         if s[0] == "xml":
             d = parse_xml(args,data)
         elif s[0] == "json":
@@ -69,9 +78,11 @@ def exec_selector(sel,fname):
             d = parse_image(args,data)
         elif s[0] == "html":
             d = parse_html(args,data)
+        elif s[0] == "csv":
+            d = parse_csv(args,data)
         for key in d.keys():
             if d[key] == "$REPLACE_WITH_FILENAME":
-                d[key] = fname
+                d[key] = fname.stem
         return d
 
 if __name__ == "__main__":
