@@ -2,10 +2,10 @@ import sqlite3,os
 from pathlib import Path
 from crontab import CronTab
 
-dbname = os.environ["DBNAME"]
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 cron = CronTab(user=True)
 pybin = directory / "bin" / "python"
+dbname = directory / "sources.db"
 
 def init_db():
     conn = sqlite3.connect(dbname)
