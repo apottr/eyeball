@@ -132,7 +132,7 @@ def check_cron():
     if len(list(cron.find_command("processor"))) == 0:
         print("processor not found")
         x = cron.new(command=("{} {}".format(pybin,(directory / "processor").with_suffix(".py"))))
-        x.setall("0 * * * *")
+        x.setall("0 */2 * * *")
     print(cron)
     cron.write()
 
