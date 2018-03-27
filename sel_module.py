@@ -62,11 +62,9 @@ def parse_csv(args,data):
     return {}
 
 def prune_data(d):
-    remap = {
-        "&lt;": None,
-        "&gt;": None
-    }
-    return d.translate(remap)
+    a = d.replace("&gt;","")
+    a = a.replace("&lt;","")
+    return a
 
 def exec_selector(sel,fname):
     with open(fname) as f:
