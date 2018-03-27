@@ -100,4 +100,4 @@ def exec_selector(sel,fname):
         return d
 
 if __name__ == "__main__":
-    print(exec_selector(sys.argv[1],Path(sys.argv[2])))
+    print(exec_selector(sys.argv[1],sys.argv[2]))

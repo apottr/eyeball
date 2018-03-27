@@ -65,7 +65,10 @@ def check_if_source_is_used(name):
     c = conn.cursor()
     c.execute('select loctag from sources where name=?',(name,))
     r = c.fetchall()
-    d = c.execute('select * from jobs where tags like ?',("%{}%".format(r[0][0]),))
+    tag = r[0][0]
+    if "," in tag:
+        tag = tag.split(",")[0]
+    d = c.execute('select * from jobs where tags like ?',("%{}%".format(tag),))
     return len(d.fetchall()) > 0
 
 def lookup_by_tag(tag):
