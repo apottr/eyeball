@@ -80,7 +80,7 @@ def exec_selector(sel,fname):
         if s[0] != "image":
             data = "\n".join(f.readlines())
         else:
-            data = f
+            data = f.read()
         if len(data) == 0:
             return {"error": "empty file", "time": fname.stem}
         args = json.loads(s[1]) if s[1] != "" else {}
@@ -100,4 +100,4 @@ def exec_selector(sel,fname):
         return d
 
 if __name__ == "__main__":
-    print(exec_selector(sys.argv[1],sys.argv[2])["text"])
+    print(exec_selector(sys.argv[1],sys.argv[2]))
