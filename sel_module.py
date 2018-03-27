@@ -66,19 +66,26 @@ def prune_data(d):
     a = a.replace("&lt;","")
     return a
 
+"""
+
+/home/amy/eyeball/data/AFRICOM_feeds/navaf/1521676806 throwing "toxml" error.
+solve by stopping xml.minidom from parsing the html tags inside.
+
+"""
+
 def exec_selector(sel,fname):
     with open(fname) as f:
         s = parse_selector(sel)
         d = None
         if s[0] != "image":
-            data = prune_data("\n".join(f.readlines()))
+            data = "\n".join(f.readlines())
         else:
             data = f
         if len(data) == 0:
             return {"error": "empty file", "time": fname.stem}
         args = json.loads(s[1]) if s[1] != "" else {}
         if s[0] == "xml":
-            d = parse_xml(args,data)
+            d = parse_html(args,data)
         elif s[0] == "json":
             d = parse_json(args,data)
         elif s[0] == "image":
@@ -93,15 +100,4 @@ def exec_selector(sel,fname):
         return d
 
 if __name__ == "__main__":
-    """sels = [
-        'xml({"time": "fieldname", "text": "fieldname"})',
-        'json({"time": "fieldname", "text": "fieldname"})',
-        'image()',
-        'html({"time": "css_selector", "text": "css_selector"})'
-    ]
-    for selector in sels:
-        print(parse_selector(selector))"""
-
-    print(exec_selector('xml({"text": ["title","description"], "time": "date"})',"processor_test.xml"))
-    print(exec_selector('json({"text": "text", "time": "time"})',"processor_test.json"))
-    #print(exec_selector('html({"text": ""})'))
+    print(exec_selector(sys.argv[1],sys.argv[2])["text"])

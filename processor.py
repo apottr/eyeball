@@ -103,6 +103,7 @@ def handle_source(name):
 
 if __name__ == "__main__":
     nltk_setup(["punkt","averaged_perceptron_tagger","maxent_ne_chunker","words"])
+
     for source in get_sources():
         if check_if_source_is_used(source["name"]):
             handle_source(source["name"])
