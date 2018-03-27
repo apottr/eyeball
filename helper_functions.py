@@ -5,7 +5,7 @@ from crontab import CronTab
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 cron = CronTab(user=True)
 pybin = directory / "bin" / "python"
-dbname = directory / "sources.db"
+dbname = str(directory / "sources.db")
 
 def init_db():
     conn = sqlite3.connect(dbname)
@@ -129,7 +129,9 @@ def check_cron():
             fname = (d / job["name"].replace(" ","_")).with_suffix(".sh")
             j = cron.new(command="sh {}".format(fname),comment=job["name"])
             j.setall(job["schedule"])
-    if len(list(cron.find_command(str(directory / "processor")))) == 0:
+    print(list(cron.find_command("processor")))
+    if len(list(cron.find_command("processor"))) == 0:
+        print("processor not found")
         x = cron.new(command=("{} {}".format(pybin,(directory / "processor").with_suffix(".py"))))
         x.setall("0 * * * *")
     print(cron)
