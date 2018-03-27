@@ -61,12 +61,19 @@ def parse_html(args,data):
 def parse_csv(args,data):
     return {}
 
+def prune_data(d):
+    remap = {
+        "&lt;": "",
+        "&gt;": ""
+    }
+    return d.translate(remap)
+
 def exec_selector(sel,fname):
     with open(fname) as f:
         s = parse_selector(sel)
         d = None
         if s[0] != "image":
-            data = "\n".join(f.readlines())
+            data = prune_data("\n".join(f.readlines()))
         else:
             data = f
         if len(data) == 0:

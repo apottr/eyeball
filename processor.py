@@ -52,7 +52,7 @@ def recurse_reassemble(tree):
             out += recurse_reassemble(leaf)
 
 def pull_ner(sentence):
-    sente = pruning(sentence)
+    sente = sentence
     tokens = nltk.sent_tokenize(sente)
     tokens = [nltk.word_tokenize(sent) for sent in tokens]
     tokens = [nltk.pos_tag(sent) for sent in tokens]
