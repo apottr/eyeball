@@ -95,7 +95,8 @@ def handle_source(name):
             fin["entites"] = d
             fin["filename"] = f.stem
             db.insert(fin)
-            time.sleep(5)
+            print("finished {}".format(f.stem))
+            time.sleep(1)
     
 
 if __name__ == "__main__":

@@ -129,7 +129,6 @@ def check_cron():
             fname = (d / job["name"].replace(" ","_")).with_suffix(".sh")
             j = cron.new(command="sh {}".format(fname),comment=job["name"])
             j.setall(job["schedule"])
-    print(list(cron.find_command("processor")))
     if len(list(cron.find_command("processor"))) == 0:
         print("processor not found")
         x = cron.new(command=("{} {}".format(pybin,(directory / "processor").with_suffix(".py"))))
