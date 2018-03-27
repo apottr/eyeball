@@ -63,8 +63,8 @@ def parse_csv(args,data):
 
 def prune_data(d):
     remap = {
-        "&lt;": "",
-        "&gt;": ""
+        "&lt;": None,
+        "&gt;": None
     }
     return d.translate(remap)
 
