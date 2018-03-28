@@ -53,10 +53,10 @@ def parse_image(args,data):
             out[key] = "$REPLACE_WITH_FILENAME"
     return out
 
-def parse_html(args,data):
+def parse_sgml(args,data,parser):
     howtoget = lambda x,y: x.select(y)
     pruner = lambda x: x.get_text()
-    return generic_handler(args,BeautifulSoup(data,"html.parser"),howtoget,pruner)
+    return generic_handler(args,BeautifulSoup(data,parser),howtoget,pruner)
 
 def parse_csv(args,data):
     return {}
@@ -85,13 +85,13 @@ def exec_selector(sel,fname):
             return {"error": "empty file", "time": fname.stem}
         args = json.loads(s[1]) if s[1] != "" else {}
         if s[0] == "xml":
-            d = parse_html(args,data)
+            d = parse_sgml(args,data,"lxml-xml")
         elif s[0] == "json":
             d = parse_json(args,data)
         elif s[0] == "image":
             d = parse_image(args,data)
         elif s[0] == "html":
-            d = parse_html(args,data)
+            d = parse_sgml(args,data,"lxml")
         elif s[0] == "csv":
             d = parse_csv(args,data)
         for key in d.keys():
