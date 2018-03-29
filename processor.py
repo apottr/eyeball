@@ -98,6 +98,7 @@ def handle_source(name):
             fin["filename"] = f.stem
             db.insert(fin)
             print("finished {}".format(str(f)))
+            time.sleep(0.5)
     
 
 if __name__ == "__main__":
