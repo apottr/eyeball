@@ -72,7 +72,7 @@ def check_if_source_is_used(name):
     if isinstance(tag,list):
         for t in tag:
             d = c.execute('select * from jobs where tags like ?',("%{}%".format(t),))
-            o.append(0 if len(d.fetchall()) > 0 else 1)
+            o.append(1 if len(d.fetchall()) > 0 else 0)
     else:
         d = c.execute('select * from jobs where tags like ?',("%{}%".format(tag),))
     return 1 in o
