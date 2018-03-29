@@ -1,9 +1,22 @@
 from dateutil import parser
-import datetime
+from datetime import datetime,timezone
+import re
+
+def check_if_epoch(t):
+    try:
+        int(t)
+        return True
+    except:
+        return False
 
 class TimeRange:
     def __init__(self,rng):
-        self.times = [parser.parse(item) for item in rng]
+        if isinstance(rng,list):
+            self.times = [parser.parse(item).astimezone() for item in rng]
+        elif check_if_epoch(rng):
+            self.times = [datetime.fromtimestamp(int(rng)).astimezone()]
+        else:
+            self.times = [parser.parse(rng).astimezone()]
         self.i = 0
         self.times = sorted(self.times)
     
@@ -33,7 +46,7 @@ class TimeRange:
                 if not state:
                     return state
             return state
-        elif isinstance(b,datetime.datetime):
+        elif isinstance(b,datetime):
             return (self.start <= b and self.end >= b)
         else:
             d = parser.parse(b)
@@ -41,8 +54,8 @@ class TimeRange:
     
     @property
     def start(self):
-        return self[0]
+        return self[0].astimezone()
 
     @property
     def end(self):
-        return self[-1]
+        return self[-1].astimezone()

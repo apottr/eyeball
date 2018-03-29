@@ -100,4 +100,7 @@ def exec_selector(sel,fname):
         return d
 
 if __name__ == "__main__":
-    print(exec_selector(sys.argv[1],sys.argv[2]))
+    try:
+        print(exec_selector(sys.argv[1],sys.argv[2]))
+    except:
+        print("exec_selector(selector,filename)")
