@@ -4,7 +4,7 @@ include
 lib
 lib64
 pip-selfcheck.json
-sources.db
+*.db
 *.bak*
 __pycache__/*.cpython-36.pyc
 src

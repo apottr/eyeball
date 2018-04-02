@@ -1,14 +1,26 @@
-import os,sqlite3
+import os,sqlite3,json,pyproj,math
 from shapely.wkt import loads,dumps
+from shapely.geometry import shape
+from shapely.ops import transform
 from pathlib import Path
 from tinydb import TinyDB,Query
 from helper_classes import TimeRange
+from functools import partial
+
 dbname = os.environ["DBNAME"]
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
-def get_all_shapes():
+def get_all_job_shapes():
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
     c.execute("select name,wkt from jobs")
+    r = c.fetchall()
+    c.close()
+    return r
+
+def get_all_geonames_shapes():
+    conn = sqlite3.connect("lookups.db")
+    c = conn.cursor()
+    c.execute("select geonameid,wkt from geonames_shapes")
     r = c.fetchall()
     c.close()
     return r
@@ -30,13 +42,26 @@ def get_data_from_job(name,time_range):
         data += o
     return data
 
+def reproject_from_wgs84(shape):
+    project = partial(pyproj.transform,pyproj.Proj(init="epsg:4326"),pyproj.Proj(init="epsg:3857"))
+    return transform(project,shape)
 
 def geosearch(query):
     out = []
     obj = loads(query)
-    for item in get_all_shapes():
+    for item in get_all_job_shapes():
         if obj.intersects(loads(item[1])):
             out.append([item[0],item[1]])
+    for item in get_all_geonames_shapes():
+        jtem = reproject_from_wgs84(loads(item[1]))
+        if jtem.geom_type == "MultiPolygon":
+            for geom in jtem.geoms:
+                if (not math.isnan(geom.area)) and obj.intersects(geom):
+                    out.append([item[0],jtem.wkt])
+                    break
+        elif jtem.area != "nan":
+            if obj.intersects(jtem):
+                out.append([item[0],jtem.wkt])
     return out
 
 def perform_search(src):

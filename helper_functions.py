@@ -1,11 +1,13 @@
 import sqlite3,os
 from pathlib import Path
 from crontab import CronTab
+from tinydb import TinyDB, Query
 
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 cron = CronTab(user=True)
 pybin = directory / "bin" / "python"
 dbname = str(directory / "sources.db")
+ddb = TinyDB("database.db")
 
 def init_db():
     conn = sqlite3.connect(dbname)
@@ -18,6 +20,7 @@ def init_db():
         c.execute('select * from jobs')
     except sqlite3.OperationalError:
         c.execute('create table jobs (name text, tags text, schedule text, wkt string)')
+
 
     c.close()
 
@@ -50,10 +53,6 @@ def add_job(src):
         conn.close()
     except Exception as e:
         print(e)
-    """if src["picker"] == "tag":
-        v = add_sh_to_cron(src["name"],sh,sch)
-    elif src["picker"] == "man":
-        v = add_job_by_hand(src["script"],src["name"],sch)"""
     v = add_sh_to_cron(src["name"],sh,sch)
     print("{} is valid: {}".format(src["name"],v))
     if v:
