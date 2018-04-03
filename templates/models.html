@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
+        <script src="{{ url_for('static',filename='main.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/1.8.1/viz.js"></script>
+    </head>
+    <body>
+        <nav id="nav">
+            <a href="#detectors">Detectors</a>
+            <a href="#predictors">Predictors</a>
+            <a href="/">Home</a>
+        </nav>
+        <h1 id="detectors">Detectors</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Model Structure</th>
+
+            </thead>
+            <tbody>
+                {% for detector in detectors %}
+                <tr>
+                    <td>{{detector.name}}</td>
+                    <td data-graph="{{ detector.graph }}"></td>
+                    <td><a href="/del_detector/{{detector.name}}">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location='/add_detector';">Add New Detector</button><br />
+        <a href="#nav">Back to Top</a>
+        <h1 id="predictors">Predictors</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Model Structure</th>
+            </thead>
+            <tbody>
+                {% for predictor in predictors %}
+                <tr>
+                    <td>{{predictor.name}}</td>
+                    <td data-graph="{{ predictor.graph }}"></td>
+                    <td><a href="/del_predictor/{{predictor.name}}">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location='/add_predictor';">Add New Predictor</button><br />
+        <a href="#nav">Back to Top</a>
+    </body>
+    <script src="{{ url_for('static',filename='models_index.js') }}"></script>
+</html>

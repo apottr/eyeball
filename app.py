@@ -1,6 +1,6 @@
 import os,csv,io
-from helper_functions import * #pylint: disable=W0614
-from parser_functions import * #pylint: disable=W0614
+from helper_functions.helper_functions import * #pylint: disable=W0614
+from parser_functions.parser_functions import * #pylint: disable=W0614
 from flask import Flask,request,render_template,redirect,Response
 app = Flask(__name__)
 
@@ -74,6 +74,11 @@ def search_route():
         return render_template("search_done.html",data=data)
     else:
         return render_template("search_start.html")
+
+@app.route("/models")
+def models_index_route():
+    d,p = get_models()
+    return render_template("models.html",detectors=d,predictors=p)
 
 if __name__ == "__main__":
     init_db()

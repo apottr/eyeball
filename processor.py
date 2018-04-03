@@ -1,11 +1,11 @@
 import nltk,sqlite3,sys,time
 from pathlib import Path
-from sel_module import exec_selector
-from helper_functions import get_sources,check_if_source_is_used
+from selector.sel_module import exec_selector
+from helper_functions.helper_functions import get_sources,check_if_source_is_used
 from tinydb import TinyDB, Query
 
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
-dbname= str(directory / "sources.db")
+dbname= str(directory / "databases" / "sources.db")
 
 
 def nltk_setup(depends):

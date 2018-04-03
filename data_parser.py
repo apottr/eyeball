@@ -1,4 +1,4 @@
-from parser_functions import get_data_from_job
+from parser_functions.parser_functions import get_data_from_job
 import sys
 
 def data_handler(job,date_range):

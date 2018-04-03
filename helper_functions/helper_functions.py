@@ -3,11 +3,11 @@ from pathlib import Path
 from crontab import CronTab
 from tinydb import TinyDB, Query
 
-directory = Path(__file__).parent.resolve() #pylint: disable=no-member
+directory = Path(__file__).parent.parent.resolve() #pylint: disable=no-member
 cron = CronTab(user=True)
 pybin = directory / "bin" / "python"
-dbname = str(directory / "sources.db")
-ddb = TinyDB("database.db")
+dbname = str(directory / "databases" / "sources.db")
+ddb = TinyDB(str(directory / "databases" / "database.db"))
 
 def init_db():
     conn = sqlite3.connect(dbname)
@@ -219,3 +219,6 @@ def sources_from_csv(lst):
     c.executemany("insert into sources values (?,?,?,?)",[i for i in lst][1:])
     conn.commit()
     conn.close()
+
+def get_models():
+    return None,None

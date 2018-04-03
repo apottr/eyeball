@@ -6,9 +6,9 @@ from shapely.wkt import dumps as wkt_dumps
 from json import loads
 import pandas as pd
 
-directory = Path(__file__).parent.resolve() #pylint: disable=no-member
+directory = Path(__file__).parent.parent.resolve() #pylint: disable=no-member
 
-dbname = (directory / "lookups.db")
+dbname = (directory / "databases" / "lookups.db")
 
 files_dir = (directory / "lookup_temp")
 
@@ -72,15 +72,8 @@ def pull_shapes_all_low():
     download_and_unzip(url,fname)
     print("finished downloading and unzipping shapes_all_low")
     df = pd.read_table(str(files_dir / fname),names=["geonameid","geojson"],skiprows=1)
-    df['geojson'] = df['geojson'].apply(lambda x: shape(loads(x)).wkt)
+    df['geojson'] = df['geojson'].apply(lambda x: shape(loads(x)).simplify(0.05).wkt)
     df.columns = ['geonameid','wkt']
     df.to_sql("geonames_shapes",conn,chunksize=10000)
     conn.close()
     os.remove(str(files_dir / fname))
-
-if __name__ == "__main__":
-    d = check_if_exists()
-    if not d[0]:
-        pull_allCountries()
-    if not d[1]:
-        pull_shapes_all_low()

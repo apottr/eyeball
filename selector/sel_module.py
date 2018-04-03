@@ -66,13 +66,6 @@ def prune_data(d):
     a = a.replace("&lt;","")
     return a
 
-"""
-
-/home/amy/eyeball/data/AFRICOM_feeds/navaf/1521676806 throwing "toxml" error.
-solve by stopping xml.minidom from parsing the html tags inside.
-
-"""
-
 def exec_selector(sel,fname):
     with open(fname) as f:
         s = parse_selector(sel)

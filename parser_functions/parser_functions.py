@@ -4,13 +4,14 @@ from shapely.geometry import shape
 from shapely.ops import transform
 from pathlib import Path
 from tinydb import TinyDB,Query
-from helper_classes import TimeRange
+from helper_classes.helper_classes import TimeRange
 from functools import partial
 
 dbname = os.environ["DBNAME"]
-directory = Path(__file__).parent.resolve() #pylint: disable=no-member
+directory = Path(__file__).parent.parent.resolve() #pylint: disable=no-member
+dbf = str(directory / "databases" / "lookups.db")
 def get_all_job_shapes():
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(str(directory / "databases" / dbname))
     c = conn.cursor()
     c.execute("select name,wkt from jobs")
     r = c.fetchall()
@@ -18,7 +19,7 @@ def get_all_job_shapes():
     return r
 
 def get_all_geonames_shapes():
-    conn = sqlite3.connect("lookups.db")
+    conn = sqlite3.connect(dbf)
     c = conn.cursor()
     c.execute("select geonameid,wkt from geonames_shapes")
     r = c.fetchall()
