@@ -7,7 +7,7 @@ from tinydb import TinyDB, Query
 
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 dbname= str(directory / "databases" / "sources.db")
-stopwords = set(sw.words("english"))
+stopwords = None
 
 def nltk_setup(depends):
     d = directory / "nltk_data_storage"
@@ -57,15 +57,16 @@ def process_text(sentence):
     tokens = [nltk.word_tokenize(sent) for sent in tokens]
     tok = []
     for sent in tokens:
-        out = []
-        sw_chunk = {"stopword": "", "words": []}
+        out = sent
+        """sw_chunk = {"stopword": "", "words": []}
         for word in sent:
             if word not in stopwords:
                 sw_chunk["words"].append(word)
             else:
                 out.append(sw_chunk)
-                sw_chunk = {"stopword": word, "words": []}
+                sw_chunk = {"stopword": word, "words": []}"""
         tok.append(out)
+
     return {"entities": tok}
 
 def process_text_old(sentence):
@@ -115,12 +116,13 @@ def handle_source(name):
             fin["filename"] = f.stem
             db.insert(fin)
             print("finished {}".format(str(f)))
-            time.sleep(0.5)
+            time.sleep(0.1)
     
 
 if __name__ == "__main__":
     #nltk_setup(["punkt","averaged_perceptron_tagger","maxent_ne_chunker","words"])
     nltk_setup(["punkt","words","stopwords"])
+    #stopwords = set(sw.words("english"))
     for source in get_sources():
         #if check_if_source_is_used(source["name"]):
         handle_source(source["name"])
