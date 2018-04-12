@@ -1,12 +1,13 @@
 import nltk,sqlite3,sys,time
 from pathlib import Path
+from nltk.corpus import stopwords as sw
 from selector.sel_module import exec_selector
 from helper_functions.helper_functions import get_sources,check_if_source_is_used
 from tinydb import TinyDB, Query
 
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
 dbname= str(directory / "databases" / "sources.db")
-
+stopwords = set(sw.words("english"))
 
 def nltk_setup(depends):
     d = directory / "nltk_data_storage"
@@ -51,7 +52,23 @@ def recurse_reassemble(tree):
         if hasattr(leaf,"label") and leaf.label() == "S":
             out += recurse_reassemble(leaf)
 
-def pull_ner(sentence):
+def process_text(sentence):
+    tokens = nltk.sent_tokenize(sentence)
+    tokens = [nltk.word_tokenize(sent) for sent in tokens]
+    tok = []
+    for sent in tokens:
+        out = []
+        sw_chunk = {"stopword": "", "words": []}
+        for word in sent:
+            if word not in stopwords:
+                sw_chunk["words"].append(word)
+            else:
+                out.append(sw_chunk)
+                sw_chunk = {"stopword": word, "words": []}
+        tok.append(out)
+    return {"entities": tok}
+
+def process_text_old(sentence):
     sente = sentence
     tokens = nltk.sent_tokenize(sente)
     tokens = [nltk.word_tokenize(sent) for sent in tokens]
@@ -92,7 +109,7 @@ def handle_source(name):
             d = []
             if "text" in data:
                 for txt in data["text"]:
-                    d.append(pull_ner(txt)["entities"])
+                    d.append(process_text(txt)["entities"])
             fin["times"] = data["time"]
             fin["entites"] = d
             fin["filename"] = f.stem
@@ -102,8 +119,8 @@ def handle_source(name):
     
 
 if __name__ == "__main__":
-    nltk_setup(["punkt","averaged_perceptron_tagger","maxent_ne_chunker","words"])
-
+    #nltk_setup(["punkt","averaged_perceptron_tagger","maxent_ne_chunker","words"])
+    nltk_setup(["punkt","words","stopwords"])
     for source in get_sources():
         #if check_if_source_is_used(source["name"]):
         handle_source(source["name"])
