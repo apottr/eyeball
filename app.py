@@ -1,5 +1,6 @@
 import os,csv,io
 from helper_functions.helper_functions import * #pylint: disable=W0614
+from helper_functions.disk_manager_functions import * #pylint: disable=W0614
 from parser_functions.parser_functions import * #pylint: disable=W0614
 from flask import Flask,request,render_template,redirect,Response
 app = Flask(__name__)
@@ -7,6 +8,14 @@ app = Flask(__name__)
 @app.route("/")
 def index_route():
     return render_template("index.html",sources=get_sources(),jobs=get_jobs())
+
+@app.route("/manager")
+def disk_manager_route():
+    return render_template("disk_manager.html",devices=get_disks())
+
+@app.route("/manager/check")
+def dm_check_new_route():
+    pass
 
 @app.route("/add_<typ>", methods=["GET","POST"])
 def add_source_route(typ):
