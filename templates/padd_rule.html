@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
+    </head>
+    <body>
+        <form method="POST" action="?">
+            <div>
+                <label>Rule Name</label>
+                <input type="text" name="name">
+            </div>
+            <div>
+                <label>Rule Text</label>
+                <input type="text" class="mono" name="rule">
+            </div>
+            <div>
+                <h3>Validate Rule</h3>
+                <p>Validate the rule against data: <button id="validate">Execute</button></p>
+            </div>
+            <button type="submit">Submit Rule</button>
+        </form>
+    </body>
+</html>

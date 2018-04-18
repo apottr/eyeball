@@ -36,7 +36,6 @@ def get_sources_for_project(projname):
     c = conn.cursor()
     c.execute("select * from projects inner join jobs on projects.sources like '%' || jobs.name || '%' where projects.name = ?",(projname,))
     r = c.fetchall()
-    #out = [{"project.name": "","job.name": "","job.schedule": ""}]
     out = []
     if len(r) != 0:
         for item in r:
@@ -48,13 +47,25 @@ def get_sources_for_project(projname):
             })
     return out
 
-def set_sources_for_project(projname,lst):
+def set_x_for_project(projname,lst,x):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    c.execute("update projects set sources=?",(";".join(lst),))
+    c.execute("update projects set {}=?".format(x),(";".join(lst),))
     conn.commit()
     conn.close()
 
+def get_jobs_for_project(projname,alljbs):
+    jbs = []
+    pjbs = [item["job.name"] for item in get_sources_for_project(projname)]
+    for item in [item["name"] for item in alljbs]:
+        if item in pjbs:
+            jbs.append({"name": item, "checked": True})
+        else:
+            jbs.append({"name": item, "checked": False})
+    return jbs
+
+def set_sources_for_project(projname,lst):
+    set_x_for_project(projname,lst,"sources")
 
 def get_datasets_for_project(projname):
     return get_x_from_project(projname,2)

@@ -108,18 +108,21 @@ def project_dash_route(projname):
     return render_template("project_dashboard.html")
 
 @app.route("/project/<projname>/add_<typ>",methods=["GET","POST"])
-def project_add_source_route(projname,typ):
+def project_add_route(projname,typ):
     if request.method == "GET":
-        jbs = []
-        pjbs = [item["job.name"] for item in get_sources_for_project(projname)]
-        for item in [item["name"] for item in get_jobs()]:
-            if item in pjbs:
-                jbs.append({"name": item, "checked": True})
-            else:
-                jbs.append({"name": item, "checked": False})
-        return render_template("padd_{}.html".format(typ),jobs=jbs)
+        jbs,alft = [],[]
+        if typ == "source_job":
+            jbs = get_jobs_for_project(projname,get_jobs())
+        elif typ == "dataset":
+            alft = ["shapefile","csv","sql","tsv"]
+        return render_template("padd_{}.html".format(typ),jobs=jbs,allowed_filetypes=alft)
     else:
-        set_sources_for_project(projname,request.form.getlist("jobs"))
+        if typ == "source_job":
+            set_sources_for_project(projname,request.form.getlist("jobs"))
+        elif typ == "dataset":
+            pass
+        elif typ == "rule":
+            pass
         return redirect("/project/{}".format(projname))
 
 if __name__ == "__main__":
