@@ -1,4 +1,9 @@
-import libmount as mnt
+import platform
+if platform.system() == "Darwin":
+    #from .darwin_mount_handler import mnt
+    pass
+else:
+    import libmount as mnt #pylint: disable=E0401
 import functools as ft
 from pathlib import Path
 

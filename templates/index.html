@@ -5,10 +5,29 @@
     </head>
     <body>
         <nav id="nav">
+            <a href="#projects">Projects</a>
             <a href="#jobs">Jobs</a>
             <a href="#sources">Sources</a>
             <a href="/search">Search</a>
         </nav>
+        <h1 id="projects">Projects</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Dashboard</th>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>{{project.name}}</td>
+                    <td><a href="/project/{{project.name}}/dashboard"></a></td>
+                    <td><a href="/del_project/{{project.name}}"></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location='/add_project';">Add New Project</button><br />
+        <a href="#nav">Back to Top</a>
         <h1 id="jobs">Jobs</h1>
         <table>
             <thead>

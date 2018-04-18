@@ -2,7 +2,7 @@ import os,csv,io
 from helper_functions.helper_functions import * #pylint: disable=W0614
 from helper_functions.disk_manager_functions import * #pylint: disable=W0614
 from parser_functions.parser_functions import * #pylint: disable=W0614
-from flask import Flask,request,render_template,redirect,Response
+from flask import Flask,request,render_template,redirect,Response,jsonify
 app = Flask(__name__)
 
 @app.route("/")
@@ -15,7 +15,7 @@ def disk_manager_route():
 
 @app.route("/manager/check")
 def dm_check_new_route():
-    pass
+    return jsonify(get_disks())
 
 @app.route("/add_<typ>", methods=["GET","POST"])
 def add_source_route(typ):
@@ -31,6 +31,8 @@ def add_source_route(typ):
             if isinstance(x,bool) and not x: 
                 return redirect("/add_job")
             x.run()
+        elif typ == "project":
+            add_project(f)
         return redirect("/")
 
 @app.route("/del_<typ>/<name>", methods=["GET"])
@@ -40,6 +42,8 @@ def del_item_route(typ,name):
             delete_job(name)
         elif typ == "source":
             delete_source(name)
+        elif typ == "project":
+            delete_project(name)
         return redirect("/")
     else:
         return redirect("/")
@@ -84,10 +88,15 @@ def search_route():
     else:
         return render_template("search_start.html")
 
-@app.route("/models")
-def models_index_route():
-    d,p = get_models()
-    return render_template("models.html",detectors=d,predictors=p)
+@app.route("/projects/<projname>")
+def project_main_route(projname):
+    src = get_sources_for_project(projname)
+    dbs = get_datasets_for_project(projname)
+    return render_template("project_home.html",sources=src,datasets=dbs)
+
+@app.route("/projects/<projname>/dashboard")
+def project_dash_route(projname):
+    return render_template("project_dashboard.html")
 
 if __name__ == "__main__":
     init_db()

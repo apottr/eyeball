@@ -20,7 +20,10 @@ def init_db():
         c.execute('select * from jobs')
     except sqlite3.OperationalError:
         c.execute('create table jobs (name text, tags text, schedule text, wkt string)')
-
+    try:
+        c.execute("select * from projects")
+    except sqlite3.OperationalError:
+        c.execute('create table projects (name text, sources text)')
 
     c.close()
 
@@ -114,6 +117,24 @@ def get_sources():
             })
     return out
 
+def get_sources_for_project(projname):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.execute("select * from projects where name=?",(projname,))
+    r = c.fetchone()
+    if len(r) != 0:
+        return r[1].split(";")
+    return []
+
+def get_datasets_for_project(projname):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.execute("select * from projects where name=?",(projname,))
+    r = c.fetchone()
+    if len(r) != 0:
+        return r[2].split(";")
+    return []
+
 def get_jobs():
     out = []
     conn = sqlite3.connect(dbname)
@@ -184,6 +205,9 @@ def add_job_by_hand(script,name,sched):
         os.remove(fname)
         return False
 
+def add_project(f):
+    pass
+
 def delete_job(name):
         try:
             os.remove("shell_files/{}.sh".format(name.replace(" ","_")))
@@ -210,6 +234,13 @@ def delete_source(name):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
     c.execute('delete from sources where name=?',(name,))
+    conn.commit()
+    conn.close()
+
+def delete_project(name):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.execute('delete from projects where name=?',(name,))
     conn.commit()
     conn.close()
 
