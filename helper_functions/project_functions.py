@@ -36,6 +36,7 @@ def get_sources_for_project(projname):
     c = conn.cursor()
     c.execute("select * from projects inner join jobs on projects.sources like '%' || jobs.name || '%' where projects.name = ?",(projname,))
     r = c.fetchall()
+    #out = [{"project.name": "","job.name": "","job.schedule": ""}]
     out = []
     if len(r) != 0:
         for item in r:

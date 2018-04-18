@@ -111,18 +111,12 @@ def project_dash_route(projname):
 def project_add_source_route(projname,typ):
     if request.method == "GET":
         jbs = []
-        pjbs = get_sources_for_project(projname)
-        for job in get_jobs():
-            for jb in pjbs:
-                if jb["job.name"] == job["name"]:
-                    obj = {"name": job["name"], "checked": True}
-                    print(obj,jbs)
-                    jbs.append(obj)
-                else:
-                    obj = {"name": job["name"], "checked": False}
-                    print(obj,jbs)
-                    jbs.append(obj)
-                
+        pjbs = [item["job.name"] for item in get_sources_for_project(projname)]
+        for item in [item["name"] for item in get_jobs()]:
+            if item in pjbs:
+                jbs.append({"name": item, "checked": True})
+            else:
+                jbs.append({"name": item, "checked": False})
         return render_template("padd_{}.html".format(typ),jobs=jbs)
     else:
         set_sources_for_project(projname,request.form.getlist("jobs"))
