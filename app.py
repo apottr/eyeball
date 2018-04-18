@@ -115,11 +115,18 @@ def project_add_source_route(projname,typ):
         for job in get_jobs():
             for jb in pjbs:
                 if jb["job.name"] == job["name"]:
-                    jbs.append({"name": job["name"], "checked": True})
+                    obj = {"name": job["name"], "checked": True}
+                    print(obj,jbs)
+                    jbs.append(obj)
                 else:
-                    jbs.append({"name": job["name"], "checked": False})
-
+                    obj = {"name": job["name"], "checked": False}
+                    print(obj,jbs)
+                    jbs.append(obj)
+                
         return render_template("padd_{}.html".format(typ),jobs=jbs)
+    else:
+        set_sources_for_project(projname,request.form.getlist("jobs"))
+        return redirect("/project/{}".format(projname))
 
 if __name__ == "__main__":
     init_db()

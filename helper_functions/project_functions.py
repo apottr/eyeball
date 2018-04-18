@@ -34,16 +34,26 @@ def add_project(f):
 def get_sources_for_project(projname):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    c.execute("select * from projects inner join jobs on projects.sources = jobs.name where projects.name = ?",(projname,))
-    r = c.fetchone()
+    c.execute("select * from projects inner join jobs on projects.sources like '%' || jobs.name || '%' where projects.name = ?",(projname,))
+    r = c.fetchall()
     out = []
     if len(r) != 0:
-        out.append({
-            "project.name": r[0],
-            "job.name": r[1],
-            "job.schedule": r[6]
-        })
+        for item in r:
+            print(item)
+            out.append({
+                "project.name": item[0],
+                "job.name": item[4],
+                "job.schedule": item[6]
+            })
     return out
+
+def set_sources_for_project(projname,lst):
+    conn = sqlite3.connect(dbname)
+    c = conn.cursor()
+    c.execute("update projects set sources=?",(";".join(lst),))
+    conn.commit()
+    conn.close()
+
 
 def get_datasets_for_project(projname):
     return get_x_from_project(projname,2)
