@@ -91,10 +91,9 @@ def search_route():
 @app.route("/project/<projname>")
 def project_main_route(projname):
     if projname != None:
-        """src = get_sources_for_project(projname)
+        src = get_sources_for_project(projname)
         dbs = get_datasets_for_project(projname)
-        rls = get_rules_for_project(projname)"""
-        src,dbs,rls = [{"name": "test job", "schedule": "* * * * *"}],[{"name": "MA_PCLS_2018.shp", "type": "shapefile"}],[{"name": "match move","data": "\w{0,4} (departs|enters|leaves|arrives) \w{0,4}"}]
+        rls = get_rules_for_project(projname)
         return render_template("project_home.html",name=projname,sources=src,datasets=dbs,rules=rls)
     else:
         return redirect("/")
