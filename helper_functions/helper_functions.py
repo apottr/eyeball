@@ -2,6 +2,7 @@ import sqlite3,os
 from pathlib import Path
 from .source_functions import * #pylint:disable=W0614
 from .project_functions import * #pylint:disable=W0614
+from .job_functions import * #pylint:disable=W0614
 from .globals import directory,dbname
 
 def init_db():

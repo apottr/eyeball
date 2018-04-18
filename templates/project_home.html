@@ -13,8 +13,8 @@
             <tbody>
                 {% for item in sources %}
                     <tr>
-                        <td>{{item.name}}</td>
-                        <td>{{item.schedule}}</td>
+                        <td>{{item["job.name"]}}</td>
+                        <td>{{item["job.schedule"]}}</td>
                     </tr>
                 {% endfor %}
             </tbody>

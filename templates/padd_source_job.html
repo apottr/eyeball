@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
+    </head>
+    <body>
+        <form method="POST" action=?>
+            <table>
+                <thead>
+                    <th>Name</th>
+                    <th>Use?</th>
+                </thead>
+                <tbody>
+                    {% for item in jobs %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{% if item.checked %}
+                                    <input type="checkbox" name="jobs" value="{{ item.name }}" checked>
+                                {% else %}
+                                    <input type="checkbox" name="jobs" value="{{ item.name }}">
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Submit Changes</button>
+        </form>
+    </body>
+</html>

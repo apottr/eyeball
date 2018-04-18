@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index_route():
-    return render_template("index.html",sources=get_sources(),jobs=get_jobs(),projects=[{"name": "testproj"}])
+    return render_template("index.html",sources=get_sources(),jobs=get_jobs(),projects=get_projects())
 
 @app.route("/manager")
 def disk_manager_route():
@@ -20,7 +20,8 @@ def dm_check_new_route():
 @app.route("/add_<typ>", methods=["GET","POST"])
 def add_source_route(typ):
     if request.method == "GET":
-        return render_template("add_{}.html".format(typ),tags=get_tags(),jobs=get_jobs())
+        jbs = get_jobs()
+        return render_template("add_{}.html".format(typ),tags=get_tags(),jobs=jbs)
     else:
         f = request.form
         print(f)
@@ -33,6 +34,7 @@ def add_source_route(typ):
             x.run()
         elif typ == "project":
             add_project(f)
+
         return redirect("/")
 
 @app.route("/del_<typ>/<name>", methods=["GET"])
@@ -91,9 +93,12 @@ def search_route():
 @app.route("/project/<projname>")
 def project_main_route(projname):
     if projname != None:
+        print(projname)
         src = get_sources_for_project(projname)
+        print(src)
         dbs = get_datasets_for_project(projname)
         rls = get_rules_for_project(projname)
+        #src,dbs,rls = [{"name": "test job", "schedule": "* * * * *"}],[{"name": "MA_PCLS_2018.shp", "type": "shapefile"}],[{"name": "match move","data": "\w{0,4} (departs|enters|leaves|arrives) \w{0,4}"}] 
         return render_template("project_home.html",name=projname,sources=src,datasets=dbs,rules=rls)
     else:
         return redirect("/")
@@ -101,6 +106,20 @@ def project_main_route(projname):
 @app.route("/project/<projname>/dashboard")
 def project_dash_route(projname):
     return render_template("project_dashboard.html")
+
+@app.route("/project/<projname>/add_<typ>",methods=["GET","POST"])
+def project_add_source_route(projname,typ):
+    if request.method == "GET":
+        jbs = []
+        pjbs = get_sources_for_project(projname)
+        for job in get_jobs():
+            for jb in pjbs:
+                if jb["job.name"] == job["name"]:
+                    jbs.append({"name": job["name"], "checked": True})
+                else:
+                    jbs.append({"name": job["name"], "checked": False})
+
+        return render_template("padd_{}.html".format(typ),jobs=jbs)
 
 if __name__ == "__main__":
     init_db()
