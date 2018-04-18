@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
+    </head>
+    <body>
+        <a href="/">Home</a>
+        <h1>{{name | upper}}</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Schedule</th>
+            </thead>
+            <tbody>
+                {% for item in sources %}
+                    <tr>
+                        <td>{{item.name}}</td>
+                        <td>{{item.schedule}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location.pathname +='/add_source_job';">Add New Source Job</button><br />
+        <table>
+            <thead>
+                <th>Rule Name</th>
+                <th>Rule Specification</th>
+            </thead>
+            <tbody>
+                {% for item in rules %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td class="mono">{{ item.data }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location.pathname +='/add_rule';">Add New Rule</button><br />
+        <table>
+            <thead>
+                <th>Filename</th>
+                <th>Filetype</th>
+            </thead>
+            <tbody>
+                {% for item in datasets %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.type }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="window.location.pathname +='/add_dataset';">Add New Dataset</button>
+    </body>
+</html>

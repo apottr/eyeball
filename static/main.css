@@ -22,17 +22,28 @@ div.grid {
     display: grid;
     grid-template-columns:
         [left] 1fr
-        [right] 3fr;
+        [middle] 0.5fr
+        [right] 1fr;
+    grid-template-rows:
+        [header] 50px
+        [all] 1fr;
+}
+
+div.grid > h1 {
+    grid-row: header;
+    grid-column: middle;
+    text-align: center;
 }
 
 div.grid > div.left {
     grid-column: left;
+    grid-row: all;
 }
 
 div.grid > div.right {
     grid-column: right;
+    grid-row: all;
 }
-
 #by-tag,#manual{
     display: none
 }

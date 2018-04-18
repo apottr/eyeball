@@ -19,8 +19,8 @@
             <tbody>
                 {% for project in projects %}
                 <tr>
-                    <td>{{project.name}}</td>
-                    <td><a href="/project/{{project.name}}/dashboard"></a></td>
+                    <td><a href="/project/{{project.name}}">{{project.name}}</a></td>
+                    <td><a href="/project/{{project.name}}/dashboard">Dashboard</a></td>
                     <td><a href="/del_project/{{project.name}}"></a></td>
                 </tr>
                 {% endfor %}
