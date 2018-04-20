@@ -39,7 +39,6 @@ def get_sources_for_project(projname):
     out = []
     if len(r) != 0:
         for item in r:
-            print(item)
             out.append({
                 "project.name": item[0],
                 "job.name": item[4],
