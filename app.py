@@ -9,13 +9,27 @@ app = Flask(__name__)
 def index_route():
     return render_template("index.html",sources=get_sources(),jobs=get_jobs(),projects=get_projects())
 
-@app.route("/manager")
-def disk_manager_route():
-    return render_template("disk_manager.html",devices=get_disks())
+@app.route("/diag")
+def diag_panel_route():
+    return render_template("diag.html",total_size=get_total_data_size(),job_size=get_job_data_size())
 
-@app.route("/manager/check")
-def dm_check_new_route():
-    return jsonify(get_disks())
+@app.route("/diag/pause_<x>")
+def diag_pause_route(x):
+    if x == "all":
+        for job in cron:
+            if job.is_enabled():
+                job.enable(False)
+            else:
+                job.enable()
+    else:
+        for job in cron.find_command(x):
+            print(job.command)
+            if job.is_enabled():
+                job.enable(False)
+            else:
+                job.enable()
+    cron.write()
+    return redirect("/diag")
 
 @app.route("/add_<typ>", methods=["GET","POST"])
 def add_source_route(typ):

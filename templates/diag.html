@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    </head>
+    <body>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+        <h1>Diagnostic Panel</h1>
+        <h3>Data directory size: {{total_size.size}}</h3>
+        <h3>Individual Jobs</h3>
+        <table>
+            <thead>
+                <th>Job</th>
+                <th>Size</th>
+            </thead>
+            <tbody>
+                {% for item in job_size %}
+                    <tr>
+                        <td>{{item.folder}}</td>
+                        <td>{{item.size}}</td>
+                        <td><a href="/diag/pause_{{item.folder}}">Toggle pause</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h3>Pause Handlers</h3>
+        <ul>
+            <li><a href="/diag/pause_processor">Processor</a></li>
+            <li><a href="/diag/pause_all">All cronjobs</a></li>
+        </ul>
+    </body>
