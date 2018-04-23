@@ -38,7 +38,7 @@ def match_rule_item_in_db(db,item):
         idx = 0
         toggle = True
         for jtem in row["entites"]:
-            o = match_sentence(jtem,item)
+            o = match_sentence(jtem,item["rule"])
             for i in range(len(o)):
                 for j in range(len(o[i])):
                     if o[i][j]:
@@ -55,14 +55,19 @@ def match_rule_to_db(fname,rule):
     r = json.loads(rule)
     db = TinyDB(fname)
     o = match_rule_item_in_db(db,r)
+    return o
 
 if __name__ == "__main__":
+    testrule = {
+        "rule": "^[A-z]{1,2}\-\d{1,4}\w?$", #pylint:disable=W1401
+    }
+    testrule2 = {
+        "rule": "USS",
+        "after": 3
+    }
     outdb = TinyDB(str(directory / "testproj.db"))
     projname = "testproj"
     l = get_db_fnames_from_project(projname)
-    r = get_rules_for_project(projname)
-    print(r)
-    """for fname in l:
-        o = match_rule_item_in_db(TinyDB(fname),r"^[A-z]{1,2}\-\d{1,4}\w?$")
-        for item in o:
-            outdb.insert(item)"""
+    for k in l:
+        h = match_rule_to_db(k,json.dumps(testrule2))
+        print(h)
