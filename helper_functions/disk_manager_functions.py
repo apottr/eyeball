@@ -26,7 +26,7 @@ def get_all_logical_disks():
     d = get_all_disks()
     out = []
     for item in d:
-        p = Path("/sys/block/{}".format(item.parent.name))
+        p = Path(f"/sys/block/{item.parent.name}")
         for pd in p.glob("*/start"):
             out.append({"device": item.parent.name, "partition": pd.parent.name})
     return out
@@ -61,7 +61,7 @@ def get_disk(target):
             return disk
 
 def get_size_of_path(p):
-    s = subprocess.Popen("du -sh {}".format(str(p)),shell=True,stdout=subprocess.PIPE)
+    s = subprocess.Popen(f"du -sh {str(p)}",shell=True,stdout=subprocess.PIPE)
     d = s.stdout.readline().decode("ascii").strip().split("\t")
     return {
         "size": d[0],

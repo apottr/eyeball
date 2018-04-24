@@ -29,7 +29,8 @@
                 {% for item in rules %}
                     <tr>
                         <td>{{ item.name }}</td>
-                        <td class="mono">{{ item.data }}</td>
+                        <td class="mono">{{ item.rule }}</td>
+                        <td><a href="#" onclick="window.location.pathname += '/del_rule_{{ item.name }}';">Delete Rule</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

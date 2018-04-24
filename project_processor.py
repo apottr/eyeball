@@ -1,10 +1,12 @@
 from helper_functions.project_functions import * #pylint:disable=W0614
 from pathlib import Path
 from tinydb import TinyDB,Query
-import re,json
+from nltk.corpus import stopwords as sw
+import re,json,nltk
 
 directory = Path(__file__).parent.resolve() #pylint:disable=no-member
-
+nltk.data.path.append(str(directory / "nltk_data_storage"))
+stopwords = set(sw.words('english'))
 def get_db_fnames_from_project(projname):
     out = []
     for job in get_sources_for_project(projname):        
@@ -16,6 +18,13 @@ def get_db_fnames_from_project(projname):
 def get_first_from_db(fname):
     db = TinyDB(fname)
     print(db.get(doc_id=1))
+
+def rem_stopwords(lst):
+    out = []
+    for word in lst:
+        if word not in stopwords:
+            out.append(word)
+    return out
 
 def match_sentence(doc,rx):
     out = []
@@ -29,11 +38,10 @@ def match_sentence(doc,rx):
 
 def match_rule_item_in_db(db,item):
     out = []
-    before,after = 0,1
     if "before" in item:
-        before = item["before"]
+        before = int(item["before"])
     if "after" in item:
-        after = item["after"]
+        after = 1 if int(item["after"]) == 0 else int(item["after"])
     for row in db:
         idx = 0
         toggle = True
@@ -42,7 +50,10 @@ def match_rule_item_in_db(db,item):
             for i in range(len(o)):
                 for j in range(len(o[i])):
                     if o[i][j]:
-                        out.append({"data": jtem[i][j-before:j+after], "time": row["times"][idx], "filename": row["filename"], "idx": j})
+                        out.append({"data": rem_stopwords(jtem[i][j-before:j+after]),
+                                    "time": row["times"][idx],
+                                    "filename": row["filename"],
+                                    "idx": j})
         if toggle:
             idx += 1
             toggle = False
@@ -58,16 +69,14 @@ def match_rule_to_db(fname,rule):
     return o
 
 if __name__ == "__main__":
-    testrule = {
-        "rule": "^[A-z]{1,2}\-\d{1,4}\w?$", #pylint:disable=W1401
-    }
-    testrule2 = {
-        "rule": "USS",
-        "after": 3
-    }
-    outdb = TinyDB(str(directory / "testproj.db"))
     projname = "testproj"
+    outdb = TinyDB(str(directory / f"{projname}.db"))
     l = get_db_fnames_from_project(projname)
+    rules = get_rules_for_project(projname)
+    out = []
     for k in l:
-        h = match_rule_to_db(k,json.dumps(testrule2))
-        print(h)
+        for rule in rules:
+            h = match_rule_to_db(k,json.dumps(rule))
+            if len(h) != 0:
+                out.append(h)
+    print(out)

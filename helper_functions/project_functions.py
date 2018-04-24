@@ -1,4 +1,4 @@
-import sqlite3,os
+import sqlite3,os,json
 from pathlib import Path
 
 def get_x_from_project(projname,x):
@@ -6,9 +6,9 @@ def get_x_from_project(projname,x):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
     c.execute("select * from projects where name=?",(projname,))
-    r = c.fetchone()
-    if len(r) != 0:
-        return [{fields[x]: item} for item in r[x].split(";")]
+    r = c.fetchall()
+    for d in r:
+        return [{fields[x]: item} for item in d[x].split(";")]
     return []
 
 def get_projects():
@@ -49,7 +49,7 @@ def get_sources_for_project(projname):
 def set_x_for_project(projname,lst,x):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    c.execute("update projects set {}=?".format(x),(";".join(lst),))
+    c.execute(f"update projects set {x}=?",(";".join(lst),))
     conn.commit()
     conn.close()
 
@@ -70,7 +70,32 @@ def get_datasets_for_project(projname):
     return get_x_from_project(projname,2)
 
 def get_rules_for_project(projname):
-    return get_x_from_project(projname,3)
+    d = get_x_from_project(projname,3)
+    out = []
+    for item in d:
+        out.append(json.loads(item["rules"]))
+    return out
+
+def add_rule_to_project(projname,f):
+    obj = {
+        "name": f["name"],
+        "rule": f["rule"],
+        "before": f["before"],
+        "after": f["after"]
+        }
+    o = [json.dumps(item) for item in get_rules_for_project(projname)]
+    set_x_for_project(projname,[json.dumps(obj)]+o,"rules")
+
+def delete_rule_from_project(projname,rname):
+    o = get_rules_for_project(projname)
+    out = []
+    for item in o:
+        if item["name"] != rname:
+            out.append(json.dumps(item))
+    set_x_for_project(projname,out,"rules")
+
+def delete_dataset_from_project(projname,dname):
+    pass
 
 def delete_project(name):
     conn = sqlite3.connect(dbname)

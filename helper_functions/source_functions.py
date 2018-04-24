@@ -12,10 +12,10 @@ def check_if_source_is_used(name):
     o = []
     if isinstance(tag,list):
         for t in tag:
-            d = c.execute('select * from jobs where tags like ?',("%{}%".format(t),))
+            d = c.execute('select * from jobs where tags like ?',(f"%{t}%",))
             o.append(1 if len(d.fetchall()) > 0 else 0)
     else:
-        d = c.execute('select * from jobs where tags like ?',("%{}%".format(tag),))
+        d = c.execute('select * from jobs where tags like ?',(f"%{tag}%",))
     return 1 in o
 
 def get_sources():

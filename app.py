@@ -35,7 +35,7 @@ def diag_pause_route(x):
 def add_source_route(typ):
     if request.method == "GET":
         jbs = get_jobs()
-        return render_template("add_{}.html".format(typ),tags=get_tags(),jobs=jbs)
+        return render_template(f"add_{typ}.html",tags=get_tags(),jobs=jbs)
     else:
         f = request.form
         print(f)
@@ -107,9 +107,7 @@ def search_route():
 @app.route("/project/<projname>")
 def project_main_route(projname):
     if projname != None:
-        print(projname)
         src = get_sources_for_project(projname)
-        print(src)
         dbs = get_datasets_for_project(projname)
         rls = get_rules_for_project(projname)
         #src,dbs,rls = [{"name": "test job", "schedule": "* * * * *"}],[{"name": "MA_PCLS_2018.shp", "type": "shapefile"}],[{"name": "match move","data": "\w{0,4} (departs|enters|leaves|arrives) \w{0,4}"}] 
@@ -129,15 +127,24 @@ def project_add_route(projname,typ):
             jbs = get_jobs_for_project(projname,get_jobs())
         elif typ == "dataset":
             alft = ["shapefile","csv","sql","tsv"]
-        return render_template("padd_{}.html".format(typ),jobs=jbs,allowed_filetypes=alft)
+        return render_template(f"padd_{typ}.html",jobs=jbs,allowed_filetypes=alft)
     else:
         if typ == "source_job":
             set_sources_for_project(projname,request.form.getlist("jobs"))
         elif typ == "dataset":
             pass
         elif typ == "rule":
-            pass
-        return redirect("/project/{}".format(projname))
+            add_rule_to_project(projname,request.form)
+        return redirect(f"/project/{projname}")
+
+@app.route("/project/<projname>/del_<typ>_<name>",methods=["GET"])
+def project_del_route(projname,typ,name):
+    if projname != None:
+        if typ == "rule":
+            delete_rule_from_project(projname,name)
+        elif typ == "dataset":
+            delete_dataset_from_project(projname,name)
+    return redirect(f"/project/{projname}")
 
 if __name__ == "__main__":
     init_db()

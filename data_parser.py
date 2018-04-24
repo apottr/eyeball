@@ -16,7 +16,7 @@ def data_handler(job,date_range):
 def lookup_geoname(name):
     conn = sqlite3.connect(dbf("lookups.db"))
     c = conn.cursor()
-    c.execute("select * from geonames_countries where name like ? collate nocase",("%{}%".format(name),))
+    c.execute("select * from geonames_countries where name like ? collate nocase",(f"%{name}%",))
     r = c.fetchone()
     return {"name": r[1],
             "latitude": r[4],
@@ -29,7 +29,7 @@ def lookup_geoname_batch(names):
     c = conn.cursor()
     out = []
     for name in names:
-        c.execute("select * from geonames_countries where name like ? collate nocase limit 1",("%{}%".format(name),))
+        c.execute("select * from geonames_countries where name like ? collate nocase limit 1",(f"%{name}%",))
         r = c.fetchone()
         print(r,name)
         if r != None:

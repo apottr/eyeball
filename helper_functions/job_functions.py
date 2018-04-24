@@ -8,7 +8,7 @@ pybin = directory / "bin" / "python"
 def lookup_by_tag(tag):
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
-    c.execute('select * from sources where loctag like ?',("%{}%".format(tag),))
+    c.execute('select * from sources where loctag like ?',(f"%{tag}%",))
     return c.fetchall()
 
 def get_tags():
