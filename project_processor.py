@@ -2,7 +2,7 @@ from helper_functions.project_functions import * #pylint:disable=W0614
 from pathlib import Path
 from tinydb import TinyDB,Query
 from nltk.corpus import stopwords as sw
-import re,json,nltk
+import re,json,nltk,sys
 
 directory = Path(__file__).parent.resolve() #pylint:disable=no-member
 nltk.data.path.append(str(directory / "nltk_data_storage"))
@@ -69,7 +69,7 @@ def match_rule_to_db(fname,rule):
     return o
 
 if __name__ == "__main__":
-    projname = "testproj"
+    projname = sys.argv[1]
     create_table(projname)
     l = get_db_fnames_from_project(projname)
     rules = get_rules_for_project(projname)
