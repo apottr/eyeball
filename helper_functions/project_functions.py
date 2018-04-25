@@ -4,10 +4,11 @@ from pathlib import Path
 def create_table(projname):
     conn = sqlite3.connect(projects_db)
     c = conn.cursor()
+    pn = projname.replace(" ","_")
     try:
-        c.execute(f"select * from {projname}_data")
+        c.execute(f"select * from {pn}_data")
     except sqlite3.OperationalError:
-        c.execute(f"create table {projname}_data (data text, time text, filename text, idx text)")
+        c.execute(f"create table {pn}_data (data text, time text, filename text, idx text)")
     try:
         #c.execute(f"select * from {projname}_lookups")
         pass
@@ -19,8 +20,8 @@ def insert_rule_datas(projname,dlist):
     conn = sqlite3.connect(projects_db)
     c = conn.cursor()
     o = [[str(item[key]) for key in item.keys()] for item in dlist]
-    print(o)
-    c.executemany(f"insert into {projname}_data values (?,?,?,?)",o)
+    pn = projname.replace(" ","_")
+    c.executemany(f"insert into {pn}_data values (?,?,?,?)",o)
     conn.commit()
     conn.close()
 
