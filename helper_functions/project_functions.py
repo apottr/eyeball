@@ -18,7 +18,9 @@ def create_table(projname):
 def insert_rule_datas(projname,dlist):
     conn = sqlite3.connect(projects_db)
     c = conn.cursor()
-    c.executemany(f"insert into {projname}_data values (?,?,?,?)",[[item[key] for key in item.keys()] for item in dlist])
+    o = [[str(item[key]) for key in item.keys()] for item in dlist]
+    print(o)
+    c.executemany(f"insert into {projname}_data values (?,?,?,?)",o)
     conn.commit()
     conn.close()
 
