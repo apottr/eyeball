@@ -1,8 +1,8 @@
 import sqlite3,os
-from .globals import directory,dbname
+from .globals import directory,sources_db
 
 def check_if_source_is_used(name):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute('select loctag from sources where name=?',(name,))
     r = c.fetchall()
@@ -20,7 +20,7 @@ def check_if_source_is_used(name):
 
 def get_sources():
     out = []
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("select * from sources")
     r = c.fetchall()
@@ -35,7 +35,7 @@ def get_sources():
     return out
 
 def add_source(src):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     try:
         c.execute('insert into sources values (?,?,?,?)',(src["name"],src["command"],src["tag"],src["selector"]))
@@ -48,14 +48,14 @@ def add_source(src):
 
 
 def delete_source(name):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute('delete from sources where name=?',(name,))
     conn.commit()
     conn.close()
 
 def sources_from_csv(lst):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.executemany("insert into sources values (?,?,?,?)",[i for i in lst][1:])
     conn.commit()

@@ -46,6 +46,7 @@ def match_rule_item_in_db(db,item):
         idx = 0
         toggle = True
         for jtem in row["entites"]:
+            print(item)
             o = match_sentence(jtem,item["rule"])
             for i in range(len(o)):
                 for j in range(len(o[i])):
@@ -70,13 +71,14 @@ def match_rule_to_db(fname,rule):
 
 if __name__ == "__main__":
     projname = "testproj"
-    outdb = TinyDB(str(directory / f"{projname}.db"))
+    create_table(projname)
     l = get_db_fnames_from_project(projname)
     rules = get_rules_for_project(projname)
     out = []
+    print(rules)
     for k in l:
         for rule in rules:
             h = match_rule_to_db(k,json.dumps(rule))
             if len(h) != 0:
                 out.append(h)
-    print(out)
+    insert_rule_datas(projname,out)

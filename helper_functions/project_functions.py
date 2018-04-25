@@ -1,9 +1,31 @@
 import sqlite3,os,json
 from pathlib import Path
 
+def create_table(projname):
+    conn = sqlite3.connect(projects_db)
+    c = conn.cursor()
+    try:
+        c.execute(f"select * from {projname}_data")
+    except sqlite3.OperationalError:
+        c.execute(f"create table {projname}_data (data text, time text, filename text, idx text)")
+    try:
+        #c.execute(f"select * from {projname}_lookups")
+        pass
+    except sqlite3.OperationalError:
+        #c.execute(f"create table {projname}_lookups ()")
+        pass
+
+def insert_rule_datas(projname,dlist):
+    conn = sqlite3.connect(projects_db)
+    c = conn.cursor()
+    c.executemany(f"insert into {projname}_data values (?,?,?,?)",[[item[key] for key in item.keys()] for item in dlist])
+    conn.commit()
+    conn.close()
+
+
 def get_x_from_project(projname,x):
     fields = ["name","sources","datasets","rules"]
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("select * from projects where name=?",(projname,))
     r = c.fetchall()
@@ -12,7 +34,7 @@ def get_x_from_project(projname,x):
     return []
 
 def get_projects():
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("select * from projects")
     r = c.fetchall()
@@ -25,14 +47,14 @@ def get_projects():
     return out
 
 def add_project(f):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("insert into projects values (?,?,?,?)",(f["name"],f["sources"],"",""))
     conn.commit()
     conn.close()
 
 def get_sources_for_project(projname):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("select * from projects inner join jobs on projects.sources like '%' || jobs.name || '%' where projects.name = ?",(projname,))
     r = c.fetchall()
@@ -47,7 +69,7 @@ def get_sources_for_project(projname):
     return out
 
 def set_x_for_project(projname,lst,x):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute(f"update projects set {x}=?",(";".join(lst),))
     conn.commit()
@@ -73,7 +95,8 @@ def get_rules_for_project(projname):
     d = get_x_from_project(projname,3)
     out = []
     for item in d:
-        out.append(json.loads(item["rules"]))
+        if len(item["rules"]) != 0:
+            out.append(json.loads(item["rules"]))
     return out
 
 def add_rule_to_project(projname,f):
@@ -98,16 +121,16 @@ def delete_dataset_from_project(projname,dname):
     pass
 
 def delete_project(name):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute('delete from projects where name=?',(name,))
     conn.commit()
     conn.close()
 
 if __name__ == "__main__":
-    from globals import directory,dbname
+    from globals import directory,projects_db,sources_db
     p = get_projects()
     print(p)
     print(get_sources_for_project(p[0]["name"]))
 else:
-    from .globals import directory,dbname
+    from .globals import directory,projects_db,sources_db

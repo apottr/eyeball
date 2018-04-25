@@ -1,19 +1,19 @@
 import sqlite3,os
 from crontab import CronTab
-from .globals import directory,dbname
+from .globals import directory,sources_db
 
 cron = CronTab(user=True)
 pybin = directory / "bin" / "python"
 
 def lookup_by_tag(tag):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute('select * from sources where loctag like ?',(f"%{tag}%",))
     return c.fetchall()
 
 def get_tags():
     out = {}
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("select loctag from sources")
     r = c.fetchall()
@@ -28,7 +28,7 @@ def get_tags():
     return out
 
 def add_job(src):
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     sh = sh_generator(src["tags"],src["name"])
     sch = ""
@@ -52,7 +52,7 @@ def add_job(src):
 
 def get_jobs():
     out = []
-    conn = sqlite3.connect(dbname)
+    conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     c.execute("select * from jobs")
     r = c.fetchall()
@@ -135,7 +135,7 @@ def delete_job(name):
             else:
                 os.remove(f)
         d.rmdir()
-        conn = sqlite3.connect(dbname)
+        conn = sqlite3.connect(sources_db)
         c = conn.cursor()
         c.execute('delete from jobs where name=?',(name,))
         conn.commit()
