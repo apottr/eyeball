@@ -117,7 +117,10 @@ def project_main_route(projname):
 
 @app.route("/project/<projname>/dashboard")
 def project_dash_route(projname):
-    return render_template("project_dashboard.html")
+    pg = request.args.get("pg")
+    pgidx = pg if pg else 0
+    d = get_data_from_project(projname,pgidx)
+    return render_template("project_dashboard.html",data=d,pgidx=pgidx)
 
 @app.route("/project/<projname>/add_<typ>",methods=["GET","POST"])
 def project_add_route(projname,typ):

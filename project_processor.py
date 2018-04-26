@@ -50,6 +50,7 @@ def match_rule_item_in_db(db,item):
             for i in range(len(o)):
                 for j in range(len(o[i])):
                     if o[i][j]:
+                        print(row,idx)
                         out.append({"data": rem_stopwords(jtem[i][j-before:j+after]),
                                     "time": row["times"][idx],
                                     "filename": row["filename"],

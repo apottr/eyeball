@@ -130,10 +130,25 @@ def delete_project(name):
     conn.commit()
     conn.close()
 
+def get_data_from_project(name,page):
+    conn = sqlite3.connect(projects_db)
+    offset = 50*page
+    c = conn.cursor()
+    c.execute(f"select * from {name}_data limit {offset},50")
+    r = c.fetchall()
+    conn.close()
+    x = []
+    for item in r:
+        x.append({
+            "data": item[0],
+            "date": item[1],
+            "file": item[2],
+            "idx": item[3]
+        })
+    return x
+
 if __name__ == "__main__":
     from globals import directory,projects_db,sources_db
-    p = get_projects()
-    print(p)
-    print(get_sources_for_project(p[0]["name"]))
+    get_data_from_project("testproj",1)
 else:
     from .globals import directory,projects_db,sources_db
