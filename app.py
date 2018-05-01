@@ -15,20 +15,8 @@ def diag_panel_route():
 
 @app.route("/diag/pause_<x>")
 def diag_pause_route(x):
-    if x == "all":
-        for job in cron:
-            if job.is_enabled():
-                job.enable(False)
-            else:
-                job.enable()
-    else:
-        for job in cron.find_command(x):
-            print(job.command)
-            if job.is_enabled():
-                job.enable(False)
-            else:
-                job.enable()
-    cron.write()
+    if x:
+        job_pauser(x)
     return redirect("/diag")
 
 @app.route("/add_<typ>", methods=["GET","POST"])
@@ -60,19 +48,13 @@ def del_item_route(typ,name):
             delete_source(name)
         elif typ == "project":
             delete_project(name)
-        return redirect("/")
-    else:
-        return redirect("/")
+    
+    return redirect("/")
 
 @app.route("/pause_job/<name>", methods=["GET"])
 def pause_job_route(name):
     if name:
-        for job in cron.find_comment(name):
-            if job.is_enabled():
-                job.enable(False)
-            else:
-                job.enable()
-        cron.write()
+        job_pauser(name)
     return redirect("/")
 
 @app.route("/export_sources")

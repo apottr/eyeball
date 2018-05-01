@@ -1,4 +1,4 @@
-import sqlite3,os
+import sqlite3,os,rpyc
 from crontab import CronTab
 from .globals import directory,sources_db
 
@@ -10,6 +10,10 @@ def lookup_by_tag(tag):
     c = conn.cursor()
     c.execute('select * from sources where loctag like ?',(f"%{tag}%",))
     return c.fetchall()
+
+def job_pauser(x,rem_server):
+    c = rpyc.connect(rem_server,18861)
+    c.root.job_pauser(x)
 
 def get_tags():
     out = {}
@@ -27,7 +31,7 @@ def get_tags():
                     out[tag] = 1
     return out
 
-def add_job(src):
+def add_job(src,rem_server):
     conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     sh = sh_generator(src["tags"],src["name"])
@@ -44,7 +48,8 @@ def add_job(src):
         conn.close()
     except Exception as e:
         print(e)
-    v = add_sh_to_cron(src["name"],sh,sch)
+    c = rpyc.connect(rem_server,18861)
+    v = c.root.add_sh_to_cron(src["name"],sh,sch)
     print("{} is valid: {}".format(src["name"],v))
     if v:
         cron.write()
@@ -73,10 +78,14 @@ def check_cron():
             fname = (d / job["name"].replace(" ","_")).with_suffix(".sh")
             j = cron.new(command="sh {}".format(fname),comment=job["name"])
             j.setall(job["schedule"])
-    if len(list(cron.find_command("processor"))) == 0:
-        print("processor not found")
-        x = cron.new(command=("{} {}".format(pybin,(directory / "processor").with_suffix(".py"))))
+    if len(list(cron.find_command("data_processor"))) == 0:
+        print("data processor not found")
+        x = cron.new(command=("{} {}".format(pybin,(directory / "data_processor").with_suffix(".py"))))
         x.setall("0 */2 * * *")
+    if len(list(cron.find_command("project_processor"))) == 0:
+        print("project processor not found")
+        z = cron.new(command="{} {}".format(pybin,(directory / "project_processor").with_suffix(".py")))
+        z.setall("0 */3 * * *")
     print(cron)
     cron.write()
 
@@ -89,22 +98,6 @@ def sh_generator(tag,name):
             d.mkdir(parents=True,exist_ok=True)
             lines.append("{0} > {2}/$(date +%s) #{1}".format(entry[1],entry[0],d))
     return lines
-
-def add_sh_to_cron(name,sh,schedule):
-    out = "\n\n".join(["#!/bin/sh",*sh])
-    d = directory / "shell_files"
-    fname = (d / name.replace(" ","_")).with_suffix(".sh")
-    f = open(fname,"w+")
-    f.write(out)
-    j = cron.new(command="sh {}".format(fname),comment=name)
-    j.setall(schedule)
-    v = j.is_valid()
-    #v = True
-    if v:
-        return j
-    else:
-        os.remove(fname)
-        return False
 
 def add_job_by_hand(script,name,sched):
     d = directory / "shell_files"
