@@ -61,6 +61,10 @@ def parse_sgml(args,data,parser):
 def parse_csv(args,data):
     return {}
 
+def parse_text(args,data):
+    d = re.findall(args["regex"],data)
+    return d
+
 def prune_data(d):
     a = d.replace("&gt;","")
     a = a.replace("&lt;","")
@@ -87,6 +91,8 @@ def exec_selector(sel,fname):
             d = parse_sgml(args,data,"lxml")
         elif s[0] == "csv":
             d = parse_csv(args,data)
+        elif s[0] == "text":
+            d = parse_text(args,data)
         for key in d.keys():
             if d[key] == "$REPLACE_WITH_FILENAME":
                 d[key] = fname.stem

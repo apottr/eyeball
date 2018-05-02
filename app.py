@@ -16,7 +16,7 @@ def diag_panel_route():
 @app.route("/diag/pause_<x>")
 def diag_pause_route(x):
     if x:
-        job_pauser(x)
+        job_pauser(x,"localhost")
     return redirect("/diag")
 
 @app.route("/add_<typ>", methods=["GET","POST"])
@@ -30,7 +30,7 @@ def add_source_route(typ):
         if typ == "source":
             add_source(f)
         elif typ == "job":
-            x = add_job(f)
+            x = add_job(f,"localhost")
             if isinstance(x,bool) and not x: 
                 return redirect("/add_job")
             x.run()
@@ -43,7 +43,7 @@ def add_source_route(typ):
 def del_item_route(typ,name):
     if name:
         if typ == "job":
-            delete_job(name)
+            delete_job(name,"localhost")
         elif typ == "source":
             delete_source(name)
         elif typ == "project":
@@ -54,7 +54,7 @@ def del_item_route(typ,name):
 @app.route("/pause_job/<name>", methods=["GET"])
 def pause_job_route(name):
     if name:
-        job_pauser(name)
+        job_pauser(name,"localhost")
     return redirect("/")
 
 @app.route("/export_sources")
@@ -133,5 +133,5 @@ def project_del_route(projname,typ,name):
 
 if __name__ == "__main__":
     init_db()
-    check_cron()
+    check_cron("localhost")
     app.run(host="0.0.0.0",debug=True)

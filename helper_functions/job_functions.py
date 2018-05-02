@@ -31,10 +31,14 @@ def get_tags():
                     out[tag] = 1
     return out
 
+def sh_generator(tag,name,rc):
+    return rc.root.sh_generator(lookup_by_tag(tag),name)
+
 def add_job(src,rem_server):
+    rc = rpyc.connect(rem_server,18861)
     conn = sqlite3.connect(sources_db)
     c = conn.cursor()
-    sh = sh_generator(src["tags"],src["name"])
+    sh = sh_generator(src["tags"],src["name"],rc)
     sch = ""
     if src["sch_mhd"] == "m":
         sch = "*/{} * * * *".format(src["sch_n"])
@@ -48,8 +52,7 @@ def add_job(src,rem_server):
         conn.close()
     except Exception as e:
         print(e)
-    c = rpyc.connect(rem_server,18861)
-    v = c.root.add_sh_to_cron(src["name"],sh,sch)
+    v = rc.root.add_sh_to_cron(src["name"],sh,sch)
     print("{} is valid: {}".format(src["name"],v))
     if v:
         cron.write()
@@ -70,34 +73,10 @@ def get_jobs():
             })
     return out
 
-def check_cron():
+def check_cron(rem_server):
     jobs = get_jobs()
-    d = directory / "shell_files"
-    for job in jobs:
-        if len(list(cron.find_comment(job["name"]))) == 0:
-            fname = (d / job["name"].replace(" ","_")).with_suffix(".sh")
-            j = cron.new(command="sh {}".format(fname),comment=job["name"])
-            j.setall(job["schedule"])
-    if len(list(cron.find_command("data_processor"))) == 0:
-        print("data processor not found")
-        x = cron.new(command=("{} {}".format(pybin,(directory / "data_processor").with_suffix(".py"))))
-        x.setall("0 */2 * * *")
-    if len(list(cron.find_command("project_processor"))) == 0:
-        print("project processor not found")
-        z = cron.new(command="{} {}".format(pybin,(directory / "project_processor").with_suffix(".py")))
-        z.setall("0 */3 * * *")
-    print(cron)
-    cron.write()
-
-def sh_generator(tag,name):
-    lines = []
-    f = lookup_by_tag(tag)
-    if len(f) != 0:
-        for entry in f:
-            d = (directory / "data" / name.replace(" ","_") / entry[0])
-            d.mkdir(parents=True,exist_ok=True)
-            lines.append("{0} > {2}/$(date +%s) #{1}".format(entry[1],entry[0],d))
-    return lines
+    c = rpyc.connect(rem_server,18861)
+    c.root.check_cron(jobs)
 
 def add_job_by_hand(script,name,sched):
     d = directory / "shell_files"
@@ -113,24 +92,11 @@ def add_job_by_hand(script,name,sched):
         os.remove(fname)
         return False
 
-def delete_job(name):
-        try:
-            os.remove("shell_files/{}.sh".format(name.replace(" ","_")))
-        except Exception as e:
-            print(e)
-        cron.remove_all(comment=name)
-        d = (directory / "data" / name.replace(" ","_"))
-        for f in d.iterdir():
-            if f.is_dir():
-                for x in f.iterdir():
-                    os.remove(x)
-                f.rmdir()
-            else:
-                os.remove(f)
-        d.rmdir()
+def delete_job(name,rem_server):
+        rc = rpyc.connect(rem_server,18861)
+        rc.root.del_job(name)
         conn = sqlite3.connect(sources_db)
         c = conn.cursor()
         c.execute('delete from jobs where name=?',(name,))
         conn.commit()
         conn.close()
-        cron.write()
