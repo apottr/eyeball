@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 def parse_selector(sel):
     #sample selector
     #xml({"time": "fieldname", "text": "fieldname"})
-    m = re.findall(r"(xml|json|image|html)\((.+)?\)",sel)
+    m = re.findall(r"(xml|json|image|html|text)\((.+)?\)",sel)
     return m[0]
 
 def generic_handler(args,data,howtoget,pruner):
@@ -62,8 +62,13 @@ def parse_csv(args,data):
     return {}
 
 def parse_text(args,data):
-    d = re.findall(args["regex"],data)
-    return d
+    out = {}
+    for key in args.keys():
+        if args[key] == "$FILENAME":
+            out[key] = "$REPLACE_WITH_FILENAME"
+        out[key] = re.findall(args[key],data)
+    print(out)
+    return out
 
 def prune_data(d):
     a = d.replace("&gt;","")

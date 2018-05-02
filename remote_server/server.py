@@ -2,6 +2,7 @@
 import rpyc,os
 from crontab import CronTab
 from pathlib import Path
+from tinydb import TinyDB,Query
 directory = Path(__file__).parent.parent.resolve() #pylint: disable=no-member
 pybin = directory / "bin" / "python"
 
@@ -64,6 +65,9 @@ def del_job(name):
     except Exception as e:
         print(e)
     cron.remove_all(comment=name)
+    db = TinyDB(str(directory / "databases" / "sources.db"))
+    g = db.search(Query().job == name)
+    db.remove(doc_ids=[i.doc_id for i in g])
     d = (directory / "data" / name.replace(" ","_"))
     for f in d.iterdir(): 
         if f.is_dir():
@@ -85,6 +89,18 @@ def sh_generator(tags,name):
             lines.append("{0} > {2}/$(date +%s) #{1}".format(entry[1],entry[0],d))
     return lines
 
+def create_source_config(sources,job):
+    db = TinyDB(str(directory / "databases" / "sources.db"))
+    if len(sources) != 0:
+        for entry in sources:
+            db.insert({
+                "name": entry[0],
+                "command": entry[1],
+                "loctag": entry[2],
+                "selector": entry[3],
+                "job": job
+            })
+
 class Server(rpyc.Service):
     def on_connect(self):
         pass
@@ -93,6 +109,7 @@ class Server(rpyc.Service):
         pass
 
     def exposed_sh_generator(self,tag,name):
+        create_source_config(tag,name)
         return sh_generator(tag,name)
 
     def exposed_del_job(self,job):

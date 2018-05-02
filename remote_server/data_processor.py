@@ -1,13 +1,16 @@
 import nltk,sqlite3,sys,time
 from pathlib import Path
 from nltk.corpus import stopwords as sw
-from selector.sel_module import exec_selector
-from helper_functions.helper_functions import get_sources,check_if_source_is_used
+from sel_module import exec_selector
 from tinydb import TinyDB, Query
 
 directory = Path(__file__).parent.resolve() #pylint: disable=no-member
-dbname= str(directory / "databases" / "sources.db")
+xdb= TinyDB(str(directory / "databases" / "sources.db"))
+
 stopwords = None
+
+def get_sources():
+    return [item for item in xdb]
 
 def nltk_setup(depends):
     d = directory / "nltk_data_storage"
@@ -22,12 +25,8 @@ def nltk_setup(depends):
             f.write("*\n*/\n!.gitignore")
 
 def get_source_selector(name):
-    conn = sqlite3.connect(dbname)
-    c = conn.cursor()
-    c.execute("select selector from sources where name=?",(name,))
-    r = c.fetchall()
-    c.close()
-    return r[0][0]
+    d = xdb.search(Query().name == name)[0]
+    return d["selector"]
 
 def pruning(string):
     remap = {
@@ -111,6 +110,9 @@ def handle_source(name):
             if "text" in data:
                 for txt in data["text"]:
                     d.append(process_text(txt)["entities"])
+            elif "data" in data:
+                for item in data["data"]:
+                    d.append(item)
             fin["times"] = data["time"]
             fin["entites"] = d
             fin["filename"] = f.stem
