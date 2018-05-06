@@ -5,12 +5,35 @@
     </head>
     <body>
         <nav id="nav">
+            <a href="#nodes">Nodes</a>
             <a href="#projects">Projects</a>
             <a href="#jobs">Jobs</a>
             <a href="#sources">Sources</a>
             <a href="/search">Search</a>
             <a href="/diag">Diagnostics</a>
         </nav>
+        <h1 id="nodes">Nodes</h1>
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Status</th>
+            </thead>
+            <tbody>
+                {% for item in nodes %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.loc }}</td>
+                        {% if item.online %}
+                            <td class="node online">Online</td>
+                        {% else %}
+                            <td class="node offline">Offline</td>
+                        {% endif %}
+                    </tr>
+            </tbody>
+        </table>
+        <button onclick="window.location='/add_host';">Add New Host</button>
+        <a href="#nav">Back to Top</a>
         <h1 id="projects">Projects</h1>
         <table>
             <thead>

@@ -1,13 +1,14 @@
 import os,csv,io
 from helper_functions.helper_functions import * #pylint: disable=W0614
 from helper_functions.disk_manager_functions import * #pylint: disable=W0614
+from helper_functions.remote_node_functions import * #pylint: disable=W0614
 from parser_functions.parser_functions import * #pylint: disable=W0614
 from flask import Flask,request,render_template,redirect,Response,jsonify
 app = Flask(__name__)
 
 @app.route("/")
 def index_route():
-    return render_template("index.html",sources=get_sources(),jobs=get_jobs(),projects=get_projects())
+    return render_template("index.html",sources=get_sources(),jobs=get_jobs(),projects=get_projects(),nodes=get_nodes())
 
 @app.route("/diag")
 def diag_panel_route():
@@ -36,7 +37,8 @@ def add_source_route(typ):
             x.run()
         elif typ == "project":
             add_project(f)
-
+        elif typ == "host":
+            add_node(f)
         return redirect("/")
 
 @app.route("/del_<typ>/<name>", methods=["GET"])
