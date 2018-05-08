@@ -29,7 +29,9 @@
                         {% else %}
                             <td class="node offline">Offline</td>
                         {% endif %}
+                        <td><a href="/del_host/{{item.name}}">Delete</a></td>
                     </tr>
+                {% endfor %}
             </tbody>
         </table>
         <button onclick="window.location='/add_host';">Add New Host</button>

@@ -1,6 +1,6 @@
 import sqlite3,os,rpyc
 from crontab import CronTab
-from .globals import directory,sources_db
+from .globals import directory,sources_db,rem_port
 
 cron = CronTab(user=True)
 pybin = directory / "bin" / "python"
@@ -12,7 +12,7 @@ def lookup_by_tag(tag):
     return c.fetchall()
 
 def job_pauser(x,rem_server):
-    c = rpyc.connect(rem_server,18861)
+    c = rpyc.connect(rem_server,rem_port)
     c.root.job_pauser(x)
 
 def get_tags():
@@ -35,7 +35,7 @@ def sh_generator(tag,name,rc):
     return rc.root.sh_generator(lookup_by_tag(tag),name)
 
 def add_job(src,rem_server):
-    rc = rpyc.connect(rem_server,18861)
+    rc = rpyc.connect(rem_server,rem_port)
     conn = sqlite3.connect(sources_db)
     c = conn.cursor()
     sh = sh_generator(src["tags"],src["name"],rc)
@@ -75,7 +75,7 @@ def get_jobs():
 
 def check_cron(rem_server):
     jobs = get_jobs()
-    c = rpyc.connect(rem_server,18861)
+    c = rpyc.connect(rem_server,rem_port)
     c.root.check_cron(jobs)
 
 def add_job_by_hand(script,name,sched):
@@ -93,7 +93,7 @@ def add_job_by_hand(script,name,sched):
         return False
 
 def delete_job(name,rem_server):
-        rc = rpyc.connect(rem_server,18861)
+        rc = rpyc.connect(rem_server,rem_port)
         rc.root.del_job(name)
         conn = sqlite3.connect(sources_db)
         c = conn.cursor()

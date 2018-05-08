@@ -8,6 +8,8 @@
         </nav>
         <h1>Diagnostic Panel</h1>
         <h3>Data directory size: {{total_size.size}}</h3>
+        <a href="/diag/download">Download Archive</a>
+        <h4>Download Ready: <span id="download_status"></span></h4>
         <h3>Individual Jobs</h3>
         <table>
             <thead>
@@ -30,3 +32,27 @@
             <li><a href="/diag/pause_all">All cronjobs</a></li>
         </ul>
     </body>
+    <script>
+        function sleep(ms){
+            return new Promise(resolve => setTimeout(resolve,ms))
+        }
+
+        async function check_download(){
+            data = 1
+            while(data != 0){
+                fetch("/diag/download/poll")
+                .then(function(response){
+                    return response.json()
+                })
+                .then(function(json){
+                    console.log(json)
+                    if(json.status == 0){
+                        data = 0
+                    }
+                })
+                await sleep(2000)
+            }
+        }
+
+    </script>
+</html>

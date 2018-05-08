@@ -47,3 +47,10 @@ div.grid > div.right {
 #by-tag,#manual{
     display: none
 }
+
+.node.online {
+    background: #0f0;
+}
+.node.offline{
+    background: #f00;
+}

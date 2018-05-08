@@ -1,11 +1,13 @@
-import os,csv,io
+import os,csv,io,time
 from helper_functions.helper_functions import * #pylint: disable=W0614
 from helper_functions.disk_manager_functions import * #pylint: disable=W0614
 from helper_functions.remote_node_functions import * #pylint: disable=W0614
+from helper_functions.exporter import * #pylint: disable=W0614
 from parser_functions.parser_functions import * #pylint: disable=W0614
-from flask import Flask,request,render_template,redirect,Response,jsonify
+from flask import Flask,request,render_template,redirect,Response,jsonify,session,send_file
 app = Flask(__name__)
 
+app.secret_key = "aaaaaaaaaabbbbbbbbbbccccccccddddddeeeeeefffffggggggg1111"
 @app.route("/")
 def index_route():
     return render_template("index.html",sources=get_sources(),jobs=get_jobs(),projects=get_projects(),nodes=get_nodes())
@@ -19,6 +21,25 @@ def diag_pause_route(x):
     if x:
         job_pauser(x,"localhost")
     return redirect("/diag")
+
+@app.route("/diag/download")
+def diag_download_route():
+    fn = "archive_{}.tar.gz".format(time.gmtime())
+    d = create_archive(fn)
+    session["fname"] = fn
+    session["sp"] = d
+    return redirect("/diag")
+
+@app.route("/diag/download/poll")
+def diag_download_poll_route():
+    if "sp" in session:
+        return jsonify({"status": session["sp"].poll()})
+    else:
+        return jsonify({"status": None})
+
+@app.route("/diag/download/final")
+def diag_download_final_route():
+    return send_file(archive_filename(session["fname"]))
 
 @app.route("/add_<typ>", methods=["GET","POST"])
 def add_source_route(typ):
@@ -50,6 +71,8 @@ def del_item_route(typ,name):
             delete_source(name)
         elif typ == "project":
             delete_project(name)
+        elif typ == "host":
+            delete_node(name)
     
     return redirect("/")
 
@@ -135,5 +158,5 @@ def project_del_route(projname,typ,name):
 
 if __name__ == "__main__":
     init_db()
-    check_cron("localhost")
+    remotes_check_cron()
     app.run(host="0.0.0.0",debug=True)
