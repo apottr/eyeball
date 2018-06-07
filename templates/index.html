@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <ul>
+            {% for item in sources %}
+                <li><strong>{{item.id}}:</strong><span style="font-family: monospace">{{item.cmd}}</span></li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
