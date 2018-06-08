@@ -25,7 +25,8 @@ def create_job(f):
         "name": f["name"],
         "sources": f.getlist("sources")
     }
-    create_obj("/jobs/job",obj)
+    print(obj)
+    #create_obj("/jobs/job",obj)
 
 def get_jobs():
     r = requests.get(esurl("/jobs/_search"))
