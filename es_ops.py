@@ -26,19 +26,22 @@ def create_job(f):
         "sources": f.getlist("sources")
     }
     print(obj)
-    #create_obj("/jobs/job",obj)
+    create_obj("/jobs/job",obj)
 
-def get_jobs():
-    r = requests.get(esurl("/jobs/_search"))
-    return r.json()
-
-def get_sources():
-    r = requests.get(esurl("/sources/_search"))
+def get_x(r,field):
     j = r.json()
     o = []
     for item in j["hits"]["hits"]:
-        o.append({"id": item["_id"], "cmd": item["_source"]["cmd"]})
+        o.append({"id": item["_id"], field: item["_source"][field]})
     return o
+
+def get_jobs():
+    r = requests.get(esurl("/jobs/_search"))
+    return get_x(r,"name")
+
+def get_sources():
+    r = requests.get(esurl("/sources/_search"))
+    return get_x(r,"cmd")
 
 def create_source(f):
     obj = {
