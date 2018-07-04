@@ -1,0 +1,27 @@
+{
+  "name": "eyeball_web",
+  "scripts": {
+    "build": "webpack"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "get-form-data": "^2.0.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-router-dom": "^4.3.1",
+    "resolve-url-loader": "^2.3.0",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.12.1"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.0.8"
+  }
+}

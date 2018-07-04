@@ -1,33 +1,25 @@
 from flask import Flask,render_template,jsonify,request,redirect
 from es_ops import db_init,get_jobs,get_sources,create_job,create_source
-
+from kube_ops import get_servers
 app = Flask(__name__)
 
 @app.route("/")
 def index_route():
-    return render_template("index.html",jobs=get_jobs(),sources=get_sources())
+    return render_template("idx.htm")
 
-@app.route("/add_<typ>",methods=["GET","POST"])
-def add_route(typ):
-    if request.method == "POST":
-        if typ == "job":
-            create_job(request.form)
-        elif typ == "source":
-            create_source(request.form)
-        return redirect("/")
-    else:
-        if typ == "job":
-            return render_template("add_job.html",sources=get_sources())
-        else:
-            return render_template(f"add_{typ}.html")
-
-@app.route("/get_<name>")
+@app.route("/api/get_<name>")
 def get_route(name):
     if name == "sources":
         return jsonify(get_sources())
-    else:
+    elif name == "regions":
+        return jsonify(get_servers())
+    elif name == "jobs":
         return jsonify(get_jobs())
+
+@app.errorhandler(404)
+def four_oh_four(e):
+    return redirect("/")
 
 if __name__ == "__main__":
     db_init()
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0",debug=True)

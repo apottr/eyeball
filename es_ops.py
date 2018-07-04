@@ -26,29 +26,44 @@ def create_job(f):
         "sources": f.getlist("sources")
     }
     print(obj)
-    create_obj("/jobs/job",obj)
+    create_obj("/config/job",obj)
 
 def get_x(r,field):
     j = r.json()
+    print(j)
     o = []
     for item in j["hits"]["hits"]:
         o.append({"id": item["_id"], field: item["_source"][field]})
     return o
 
 def get_jobs():
-    r = requests.get(esurl("/jobs/_search"))
+    r = requests.get(esurl("/config/_search"),headers={
+        "Content-Type": "application/json"
+    },data=json.dumps({
+        "_source": True,
+        "query": {
+            "type": {"value": "job"}
+        }
+    }))
     return get_x(r,"name")
 
 def get_sources():
-    r = requests.get(esurl("/sources/_search"))
+    r = requests.get(esurl("/config/_search"),headers={
+        "Content-Type": "application/json"
+    },data=json.dumps({
+        "_source": True,
+        "query": {
+            "type": {"value": "source"}
+        }
+    }))
     return get_x(r,"cmd")
 
 def create_source(f):
     obj = {
-        "cmd": f["cmd"]
+        "cmd": f["cmd"],
+        "region": f["region"]
     }
-    create_obj("/sources/source",obj)
+    create_obj("/config/source",obj)
 
 def db_init():
-    for idx in ["jobs","sources"]:
-        guarantee_index_exists(idx)
+    guarantee_index_exists("config")

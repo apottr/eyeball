@@ -4,6 +4,12 @@
     </head>
     <body>
         <form method="POST" action="?">
+            <label>Region</label>
+            <select name="region">
+                {% for reg in regions %}
+                    <option value="{{reg}}">{{reg}}</option>
+                {% endfor %}
+            </select>
             <label>Command</label>
             <input type="text" name="cmd" style="font-family: monospace">
             <button type="submit">Submit Source</button>
