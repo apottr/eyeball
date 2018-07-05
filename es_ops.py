@@ -30,7 +30,6 @@ def create_job(f):
 
 def get_x(r,field):
     j = r.json()
-    print(j)
     o = []
     for item in j["hits"]["hits"]:
         o.append({"id": item["_id"], field: item["_source"][field]})
@@ -64,6 +63,10 @@ def create_source(f):
         "region": f["region"]
     }
     create_obj("/config/source",obj)
+
+def delete_obj(type,id):
+    r = requests.delete(esurl(f"/{type}/{id}"))
+    return r.json()
 
 def db_init():
     guarantee_index_exists("config")

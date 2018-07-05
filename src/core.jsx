@@ -8,13 +8,19 @@ import {
 	Switch,
 	Redirect
 } from 'react-router-dom'
+import {
+	HandleAddJob,
+	HandleAddSource
+} from './form_handlers.jsx'
 
 const ConRouter = () => (
 	<Router>
 		<Switch>
 			<Route exact path="/" component={Homepage} />
 			<Route path="/config/add-source" component={HandleAddSource} />
+			<Route path="/config/add-job" component={HandleAddJob} />
 			<Route path="/config/new-source" component={SourceAdd} />
+			<Route path="/config/new-job" component={JobAdd} />
 		</Switch>
 	</Router>
 )
@@ -23,22 +29,10 @@ const Homepage = () => (
 	<div>
 		<h1>Hello World!</h1>
 		<Link to="/config/new-source">Add Source</Link>
+		<br />
+		<Link to="/config/new-job">Add Job</Link>
 	</div>
 )
-
-class HandleAddSource extends React.Component {
-	constructor(props){
-		super(props)
-	}
-	componentDidMount(){
-		console.log(this.props.location.state)
-	}
-	render(){
-		return (
-			<Redirect to="/" />
-		)
-	}
-}
 
 const SelectOption = (props) => {
 	const li = props.vs.map(v => (
@@ -74,6 +68,43 @@ class SourceAdd extends React.Component {
         	<input type="text" name="cmd" />
         	<button type="submit">Submit Source</button>
 		</Form>
+		)
+	}
+}
+
+class JobAdd extends React.Component {
+	constructor(props){
+		super(props)
+		this.state = {sources: []}
+	}
+	getSources(){
+		fetch("/api/get_sources")
+		.then(r => r.json())
+		.then(d => this.setState({sources: d}))
+	}
+	componentDidMount(){
+		this.getSources()
+	}
+	sCheckboxes(){
+		const a = this.state.sources.map(v => (
+			<li>
+				<label>{v.cmd}</label>
+				<input type="checkbox" name="sources" value={v.id}/>
+			</li>
+		))
+		return a
+	}
+	render(){
+		return (
+			<Form to='/config/add-job' method="POST">
+				<h1>Add Job</h1>
+				<input type="text" name="name" /><br />
+            	<label>Sources</label>
+				<ul>
+					{this.sCheckboxes()}
+				</ul>
+            	<button type="submit">Submit Job</button>
+			</Form>
 		)
 	}
 }
