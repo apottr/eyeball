@@ -22,7 +22,7 @@ class GenericHandler extends React.Component {
 	}
 	render(){
 		return (
-			<Redirect to="/" />
+			<Redirect to={this.props.redirectHref} />
 		)
 	}
 }
@@ -31,6 +31,7 @@ const HandleAddSource = (props) => {
 	return (
 		<GenericHandler 
 			href="/api/add-source"
+			redirectHref="/config"
 			data={props.location.state} />
 	)
 }
@@ -39,6 +40,7 @@ const HandleAddJob = (props) => {
 	return (
 		<GenericHandler 
 			href="/api/add-job"
+			redirectHref="/config"
 			data={props.location.state} />
 	)
 }

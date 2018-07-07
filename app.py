@@ -7,7 +7,7 @@ app = Flask(__name__)
 def index_route():
     return render_template("idx.htm")
 
-@app.route("/api/get_<name>")
+@app.route("/api/get-<name>")
 def get_route(name):
     if name == "sources":
         return jsonify(get_sources())
@@ -27,7 +27,7 @@ def add_route(name):
 
 @app.route("/api/del-<name>/<id>",methods=["GET"])
 def del_route(name,id):
-    delete_obj(name,id)
+    delete_obj(f"{name}s",name,id)
     return jsonify({"status": f"deleted {id} sucessfully"})
 
 @app.errorhandler(404)

@@ -26,35 +26,31 @@ def create_job(f):
         "sources": f.getlist("sources")
     }
     print(obj)
-    create_obj("/config/job",obj)
+    create_obj("/jobs/job",obj)
 
 def get_x(r,field):
     j = r.json()
     o = []
     for item in j["hits"]["hits"]:
-        o.append({"id": item["_id"], field: item["_source"][field]})
+        obj = {"id": item["_id"]}
+        if isinstance(field,list):
+            for fi in field:
+                obj[fi] = item["_source"][fi]
+        else:
+            obj[field] = item["_source"][field]
+        o.append(obj)
     return o
 
 def get_jobs():
-    r = requests.get(esurl("/config/_search"),headers={
+    r = requests.get(esurl("/jobs/_search"),headers={
         "Content-Type": "application/json"
-    },data=json.dumps({
-        "_source": True,
-        "query": {
-            "type": {"value": "job"}
-        }
-    }))
-    return get_x(r,"name")
+    })
+    return get_x(r,["name","sources"])
 
 def get_sources():
-    r = requests.get(esurl("/config/_search"),headers={
+    r = requests.get(esurl("/sources/_search"),headers={
         "Content-Type": "application/json"
-    },data=json.dumps({
-        "_source": True,
-        "query": {
-            "type": {"value": "source"}
-        }
-    }))
+    })
     return get_x(r,"cmd")
 
 def create_source(f):
@@ -62,11 +58,12 @@ def create_source(f):
         "cmd": f["cmd"],
         "region": f["region"]
     }
-    create_obj("/config/source",obj)
+    create_obj("/sources/source",obj)
 
-def delete_obj(type,id):
-    r = requests.delete(esurl(f"/{type}/{id}"))
+def delete_obj(index,type,id):
+    r = requests.delete(esurl(f"/{index}/{type}/{id}"))
     return r.json()
 
 def db_init():
-    guarantee_index_exists("config")
+    for i in ["jobs","sources"]:
+        guarantee_index_exists(i)
