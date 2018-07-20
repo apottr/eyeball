@@ -56,7 +56,8 @@ def get_sources():
 def create_source(f):
     obj = {
         "cmd": f["cmd"],
-        "region": f["region"]
+        "region": f["region"],
+        "schedule": f["sched"]
     }
     create_obj("/sources/source",obj)
 

@@ -25,8 +25,9 @@ def add_route(name):
 
     return jsonify({"status": f"created {name} successfully"})
 
-@app.route("/api/del-<name>/<id>",methods=["GET"])
-def del_route(name,id):
+@app.route("/api/del-<name>",methods=["POST"])
+def del_route(name):
+    id = request.form["id"]
     delete_obj(f"{name}s",name,id)
     return jsonify({"status": f"deleted {id} sucessfully"})
 

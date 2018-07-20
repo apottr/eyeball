@@ -37,20 +37,17 @@ const Empty = (props) => (
 	<div><h1>{JSON.stringify(props)}</h1></div>
 )
 
+const Tab = (props) => (
+	<span>&emsp;</span>
+)
+
 const UnorderedList = (props) => {
-	let opts = {}
-	let href = ""
-	if("opts" in props){
-		opts = props.opts
-	}
-	if ("href" in opts){
-		href = opts.href
-	}
-	const li = props.items.map(v => {
-			if(href){
-				return (<li key={v[opts.hrefKey]}><Link to={href+v[opts.hrefKey]}>{v[opts.valKey]}</Link></li>)
-			}
-			return (<li key={v}>{v}</li>)
+	const li = props.items.map((v,i) => {
+		if("element" in props){
+			return (<li key={i}><props.element data={v} /></li>)
+		}else{
+			return (<li key={i}>{v}</li>)
+		}
 	})
 	return (
 		<ul>
@@ -59,4 +56,4 @@ const UnorderedList = (props) => {
 	)
 }
 
-export { SelectOption, UnorderedList, Empty }
+export { SelectOption, UnorderedList, Empty, Tab }

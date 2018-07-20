@@ -36,6 +36,26 @@ const HandleAddSource = (props) => {
 	)
 }
 
+const HandleDelSource = (props) => {
+	return (
+		<GenericHandler
+			href="/api/del-source"
+			redirectHref="/config"
+			data={{id: props.match.params.id}}
+		/>
+	)
+}
+
+const HandleDelJob = (props) => {
+	return (
+		<GenericHandler
+			href="/api/del-job"
+			redirectHref="/config"
+			data={{id: props.match.params.id}}
+		/>
+	)
+}
+
 const HandleAddJob = (props) => {
 	return (
 		<GenericHandler 
@@ -45,4 +65,9 @@ const HandleAddJob = (props) => {
 	)
 }
 
-export {HandleAddSource, HandleAddJob} 
+export {
+	HandleAddSource, 
+	HandleAddJob, 
+	HandleDelSource, 
+	HandleDelJob
+} 
