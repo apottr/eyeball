@@ -1,3 +1,4 @@
+from kube_ops import create_cronjob,delete_cronjob
 import requests,os,json
 
 if "ES_SERVICE_SERVICE_HOST" in os.environ:
@@ -21,13 +22,18 @@ def create_obj(p,obj):
     return r
 
 def create_job(f):
+    srcs = f.getlist("sources")
+    name = f["name"]
     obj = {
-        "name": f["name"],
-        "sources": f.getlist("sources")
+        "name": name,
+        "sources": srcs
     }
     print(obj)
-    create_obj("/jobs/job",obj)
+    for sid in srcs:
+        a = get_source(sid)
+        create_cronjob(a)
 
+    create_obj("/jobs/job",obj)
 def get_x(r,field):
     j = r.json()
     o = []
@@ -41,17 +47,33 @@ def get_x(r,field):
         o.append(obj)
     return o
 
+def get_y(r):
+    j = r.json()
+    if j["found"]:
+        return j["_source"]
+    else:
+        return {}
+
 def get_jobs():
     r = requests.get(esurl("/jobs/_search"),headers={
         "Content-Type": "application/json"
     })
     return get_x(r,["name","sources"])
 
+def get_job(id):
+    r = requests.get(esurl(f"/jobs/job/{id}"))
+    return get_y(r)
+
 def get_sources():
     r = requests.get(esurl("/sources/_search"),headers={
         "Content-Type": "application/json"
     })
     return get_x(r,"cmd")
+
+def get_source(id):
+    r = requests.get(esurl(f"/sources/source/{id}"))
+    return get_y(r)
+
 
 def create_source(f):
     obj = {
@@ -62,6 +84,10 @@ def create_source(f):
     create_obj("/sources/source",obj)
 
 def delete_obj(index,type,id):
+    if index == "jobs":
+        x = get_job(id)
+        if x != {}:
+            delete_cronjob(x["name"])
     r = requests.delete(esurl(f"/{index}/{type}/{id}"))
     return r.json()
 

@@ -3,8 +3,9 @@ from es_ops import db_init,get_jobs,get_sources,create_job,create_source,delete_
 from kube_ops import get_servers
 app = Flask(__name__)
 
-@app.route("/")
-def index_route():
+@app.route("/", defaults={'path': ''})
+@app.route("/<path:path>")
+def index_route(path):
     return render_template("idx.htm")
 
 @app.route("/api/get-<name>")
