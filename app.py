@@ -32,10 +32,6 @@ def del_route(name):
     delete_obj(f"{name}s",name,id)
     return jsonify({"status": f"deleted {id} sucessfully"})
 
-@app.errorhandler(404)
-def four_oh_four(e):
-    return redirect("/")
-
 if __name__ == "__main__":
     db_init()
     app.run(host="0.0.0.0",debug=True)
