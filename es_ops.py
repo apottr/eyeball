@@ -22,7 +22,7 @@ def create_obj(p,obj):
     return r
 
 def create_job(f):
-    srcs = f.getlist("sources")
+    srcs = f["sources"].split(",")
     name = f["name"]
     obj = {
         "name": name,
@@ -31,6 +31,8 @@ def create_job(f):
     print(obj)
     for sid in srcs:
         a = get_source(sid)
+        a["id"] = sid
+        print(a)
         create_cronjob(a)
 
     create_obj("/jobs/job",obj)
@@ -87,7 +89,8 @@ def delete_obj(index,type,id):
     if index == "jobs":
         x = get_job(id)
         if x != {}:
-            delete_cronjob(x["name"])
+            for src in x["sources"]:
+                delete_cronjob(src)
     r = requests.delete(esurl(f"/{index}/{type}/{id}"))
     return r.json()
 

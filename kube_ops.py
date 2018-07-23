@@ -17,10 +17,10 @@ def get_servers():
 def create_cronjob(cfg):
     cronjob = client.V1beta1CronJob(
         metadata=client.V1ObjectMeta(
-            name=cfg["_id"].lower()+"-cronjob"
+            name=cfg["id"].lower()+"-cronjob"
         ),
         spec=client.V1beta1CronJobSpec(
-            schedule=cfg["_source"]["schedule"],
+            schedule=cfg["schedule"],
             job_template=client.V1beta1JobTemplateSpec(
                 spec=client.V1JobSpec(
                     template=client.V1PodTemplateSpec(
@@ -32,13 +32,13 @@ def create_cronjob(cfg):
                                     env=[
                                         client.V1EnvVar(
                                             name="ID",
-                                            value=cfg["_id"]
+                                            value=cfg["id"]
                                         )
                                     ],
                                 )
                             ],
                             restart_policy="OnFailure",
-                            node_name=cfg["_source"]["region"]
+                            node_name=cfg["region"]
                         )
                     )
                 )
