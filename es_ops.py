@@ -76,6 +76,19 @@ def get_source(id):
     r = requests.get(esurl(f"/sources/source/{id}"))
     return get_y(r)
 
+def get_data_for_source(id, off=0, lim=10):
+    r = requests.get(esurl("/data/_search"),headers={
+        "Content-Type": "application/json"
+    },data=json.dumps({
+        "from": off, "size": lim,
+        "query": {
+            "match": {
+                "source_id": id
+            }
+        }
+    }))
+    j = r.json()
+    return [i["_source"] for i in j["hits"]["hits"]]
 
 def create_source(f):
     obj = {

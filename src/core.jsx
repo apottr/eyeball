@@ -39,7 +39,7 @@ const ConRouter = () => (
 			<Route path="/config/new-source" component={SourceAdd} />
 			<Route path="/config/new-job" component={JobAdd} />
 			<Route path="/config/job/:id" component={Empty} />
-			<Route path="/config/source/:id" component={Empty} />
+			<Route path="/config/source/:id" component={SourceView} />
 		</Switch>
 	</Router>
 )
@@ -175,6 +175,28 @@ class JobAdd extends React.Component {
 				</ul>
             	<button type="submit">Submit Job</button>
 			</Form>
+		)
+	}
+}
+
+class SourceView extends React.Component {
+	constructor(props){
+		super(props)
+		this.state = {data: []}
+	}
+	getData(){
+		const id = this.props.match.params.id
+		fetch(`/api/get-source/${id}`)
+		.then(r => r.json())
+		.then(r => this.setState({data: r}))
+	}
+	componentDidMount(){
+		this.getData()
+	}
+	render(){
+		let a = this.state.data.map(e => ( <li><pre>{e.data}</pre></li> ))
+		return (
+			<ul>{a}</ul>
 		)
 	}
 }

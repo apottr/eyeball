@@ -1,5 +1,5 @@
 from flask import Flask,render_template,jsonify,request,redirect
-from es_ops import db_init,get_jobs,get_sources,create_job,create_source,delete_obj
+from es_ops import db_init,get_jobs,get_sources,create_job,create_source,delete_obj,get_data_for_source
 from kube_ops import get_servers
 app = Flask(__name__)
 
@@ -16,6 +16,11 @@ def get_route(name):
         return jsonify(get_servers())
     elif name == "jobs":
         return jsonify(get_jobs())
+
+@app.route("/api/get-<name>/<id>")
+def get_det_route(name,id):
+    if name == "source":
+        return jsonify(get_data_for_source(id))
 
 @app.route("/api/add-<name>",methods=["POST"])
 def add_route(name):
