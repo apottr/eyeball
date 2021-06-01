@@ -35,7 +35,7 @@ rpyc==3.4.4
 Shapely==1.6.4.post1
 six==1.11.0
 tinydb==3.8.1
-urllib3==1.22
+urllib3==1.26.5
 virtualenv==15.1.0
 Werkzeug==0.14.1
 wpgtk==4.7.2
